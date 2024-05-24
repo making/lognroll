@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS log
 
 CREATE INDEX log_timestamp ON log (timestamp);
 CREATE INDEX log_service_name ON log (service_name);
+CREATE INDEX log_scope ON log (scope);
 CREATE INDEX log_severity ON log (severity);
 CREATE INDEX log_trace_id ON log (trace_id);
 
