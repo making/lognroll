@@ -80,6 +80,20 @@ class LogsV1ControllerTest extends IntegrationTestBase {
 		assertData();
 	}
 
+	@Test
+	void ingestJsonGzip() throws Exception {
+		byte[] json = new ClassPathResource("logs.json").getContentAsByteArray();
+		ResponseEntity<Void> response = this.restClient.post()
+				.uri("/v1/logs")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header(HttpHeaders.CONTENT_ENCODING, "gzip")
+				.body(compress(json))
+				.retrieve()
+				.toBodilessEntity();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertData();
+	}
+
 	void assertData() {
 		String logs = this.restClient.get().uri("/api/logs").retrieve().body(String.class);
 		JsonContent<Object> content = this.json.from(logs);
