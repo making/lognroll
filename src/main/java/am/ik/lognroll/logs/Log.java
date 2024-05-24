@@ -19,8 +19,8 @@ import io.opentelemetry.proto.resource.v1.Resource;
 import org.jilt.Builder;
 
 @Builder
-public record Log(Instant timestamp, String severity, String serviceName, String scope, String body, String traceId,
-		String spanId, Map<String, Object> attributes, Map<String, Object> resourceAttributes) {
+public record Log(Long logId, Instant timestamp, String severity, String serviceName, String scope, String body,
+		String traceId, String spanId, Map<String, Object> attributes, Map<String, Object> resourceAttributes) {
 
 	private static final String SERVICE_NAME_ATTR = "service.name";
 

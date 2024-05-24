@@ -78,6 +78,11 @@
 			<version>0.3.2</version>
 		</dependency>
 		<dependency>
+			<groupId>am.ik.pagination</groupId>
+			<artifactId>pagination</artifactId>
+			<version>0.2.0</version>
+		</dependency>
+		<dependency>
 			<groupId>co.elastic.logging</groupId>
 			<artifactId>logback-ecs-encoder</artifactId>
 			<version>1.6.0</version>
