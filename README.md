@@ -2,6 +2,8 @@
 
 a simple log store
 
+![logo](./logo.png)
+
 * OTLP/HTTP only
 * Protocol Buffers and JSON are supported
 * gzip compression is supported
