@@ -1,13 +1,13 @@
-package lol.maki.logsink;
+package ik.am.lognroll;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.TestConfiguration;
 
 @TestConfiguration(proxyBeanMethods = false)
-public class TestLogSinkAppApplication {
+public class TestLognrollApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.from(LogSinkAppApplication::main).with(TestLogSinkAppApplication.class).run(args);
+		SpringApplication.from(LognrollApplication::main).with(TestLognrollApplication.class).run(args);
 	}
 
 }

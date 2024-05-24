@@ -1,4 +1,4 @@
-package lol.maki.logsink;
+package ik.am.lognroll;
 
 import org.junit.jupiter.api.BeforeEach;
 

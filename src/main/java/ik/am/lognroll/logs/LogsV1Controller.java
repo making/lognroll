@@ -1,4 +1,4 @@
-package lol.maki.logsink.logs;
+package ik.am.lognroll.logs;
 
 import java.time.Instant;
 import java.util.HashMap;

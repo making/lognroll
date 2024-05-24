@@ -1,6 +1,6 @@
-# OTLP log sink
+# LogN'Roll
 
-a tiny OTLP log receiver
+a simple log store
 
 * OTLP/HTTP only
 * Protocol Buffers and JSON are supported

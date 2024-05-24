@@ -1,4 +1,4 @@
-package lol.maki.logsink.config;
+package ik.am.lognroll.config;
 
 import java.util.function.Predicate;
 
