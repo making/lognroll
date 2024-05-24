@@ -80,7 +80,6 @@ public class JdbcLogQuery implements LogQuery {
 		if (request.pageRequest().pageSize() > 0) {
 			sql.append("LIMIT %d".formatted(request.pageRequest().pageSize()));
 		}
-		System.out.println(sql);
 		return this.jdbcClient.sql(sql.toString()) //
 			.params(params) //
 			.query((rs, rowNum) -> LogBuilder.log()
