@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "lognroll.db.path",
+      "type": "java.lang.String",
+      "description": "The path of lognroll's sqlite3."
+    }
+  ]
+}

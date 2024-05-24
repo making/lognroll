@@ -8,8 +8,10 @@ import java.util.zip.GZIPOutputStream;
 import com.google.protobuf.util.JsonFormat;
 import io.opentelemetry.proto.logs.v1.LogsData;
 import am.ik.lognroll.IntegrationTestBase;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,14 @@ import org.springframework.util.StreamUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LogsV1ControllerTest extends IntegrationTestBase {
+
+	@Autowired
+	LogStore logStore;
+
+	@BeforeEach
+	void resetData() {
+		this.logStore.clear();
+	}
 
 	@Test
 	void ingestProtobuf() throws Exception {

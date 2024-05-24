@@ -4,9 +4,11 @@ a simple log store
 
 ![logo](./logo.png)
 
-* OTLP/HTTP only
-* Protocol Buffers and JSON are supported
-* gzip compression is supported
+* Lightweight
+* Supports OTLP/HTTP (No Grpc)
+* Compatible with both Protocol Buffers and JSON
+* Gzip compression supported
+* Stores log data in SQLite3
 
 ## Send a example record
 
