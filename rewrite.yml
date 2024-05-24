@@ -1,0 +1,32 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.example.RenameProject
+displayName: Rename project
+recipeList:
+- org.openrewrite.java.ChangePackage:
+      oldPackageName: lol.maki.logsink
+      newPackageName: com.example.logreceiver # <-- change me (Base Package)
+      caseSensitive: true
+      filePattern: '**/*.java;**/*.properties;**/*.xml'
+- org.openrewrite.text.FindAndReplace:
+      find: LogSinkAppApplication
+      replace: LogReceiverAppApplication # <-- change me (Main Class Name)
+      caseSensitive: true
+      filePattern: '**/*.java;**/*.properties;**/*.xml'
+- org.openrewrite.text.FindAndReplace:
+      find: lol.maki.logsink
+      replace: com.example.logreceiver # <-- change me (Maven GroupId)
+      caseSensitive: true
+      filePattern: '**/*.java;**/*.properties;**/*.xml'
+- org.openrewrite.text.FindAndReplace:
+      find: log-sink
+      replace: log-receiver # <-- change me (Maven ArtifactId)
+      caseSensitive: true
+      filePattern: '**/*.java;**/*.properties;**/*.xml'
+- org.openrewrite.RenameFile:
+      fileMatcher: '**/LogSinkAppApplication.java'
+      fileName: LogReceiverAppApplication.java # <-- change me (Main Class Name)
+- org.openrewrite.RenameFile:
+      fileMatcher: '**/TestLogSinkAppApplication.java'
+      fileName: TestLogReceiverAppApplication.java # <-- change me (Test Main Class)
+- org.openrewrite.java.RemoveUnusedImports
