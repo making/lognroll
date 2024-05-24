@@ -64,6 +64,7 @@ public class JdbcLogStore implements LogStore {
 	@Override
 	public void clear() {
 		this.jdbcTemplate.update("DELETE FROM resource_attributes");
+		this.jdbcTemplate.update("DELETE FROM log");
 	}
 
 }

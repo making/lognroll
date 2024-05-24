@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.json.JsonContent;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,7 @@ class LogsV1ControllerTest extends IntegrationTestBase {
 			.retrieve()
 			.toBodilessEntity();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertData();
 	}
 
 	@Test
@@ -61,6 +63,7 @@ class LogsV1ControllerTest extends IntegrationTestBase {
 			.retrieve()
 			.toBodilessEntity();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertData();
 	}
 
 	@Test
@@ -74,6 +77,36 @@ class LogsV1ControllerTest extends IntegrationTestBase {
 			.retrieve()
 			.toBodilessEntity();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertData();
+	}
+
+	void assertData() {
+		String logs = this.restClient.get().uri("/api/logs").retrieve().body(String.class);
+		JsonContent<Object> content = this.json.from(logs);
+		assertThat(content).extractingJsonPathNumberValue("$.length()").isEqualTo(1);
+		assertThat(content).extractingJsonPathNumberValue("$[0].logId").isNotNull();
+		assertThat(content).extractingJsonPathStringValue("$[0].timestamp").isEqualTo("2018-12-13T14:51:00.300Z");
+		assertThat(content).extractingJsonPathStringValue("$[0].severity").isEqualTo("Information");
+		assertThat(content).extractingJsonPathStringValue("$[0].serviceName").isEqualTo("my.service");
+		assertThat(content).extractingJsonPathStringValue("$[0].scope").isEqualTo("my.library");
+		assertThat(content).extractingJsonPathStringValue("$[0].body").isEqualTo("Example log record");
+		assertThat(content).extractingJsonPathStringValue("$[0].traceId")
+			.isEqualTo("e41f0414517bf7cd37f35d370f6ebd07adf7f35dc50bad02");
+		assertThat(content).extractingJsonPathStringValue("$[0].spanId").isEqualTo("104135f41ec40b70b5075ef8");
+		assertThat(content).extractingJsonPathNumberValue("$[0].attributes['int.attribute']").isEqualTo(10);
+		assertThat(content).extractingJsonPathNumberValue("$[0].attributes['array.attribute'].length()").isEqualTo(2);
+		assertThat(content).extractingJsonPathStringValue("$[0].attributes['array.attribute'][0]").isEqualTo("many");
+		assertThat(content).extractingJsonPathStringValue("$[0].attributes['array.attribute'][1]").isEqualTo("values");
+		assertThat(content).extractingJsonPathNumberValue("$[0].attributes['double.attribute']").isEqualTo(637.704);
+		assertThat(content).extractingJsonPathStringValue("$[0].attributes['string.attribute']")
+			.isEqualTo("some string");
+		assertThat(content).extractingJsonPathMapValue("$[0].attributes['map.attribute']").hasSize(1);
+		assertThat(content).extractingJsonPathStringValue("$[0].attributes['map.attribute']['some.map.key']")
+			.isEqualTo("some value");
+		assertThat(content).extractingJsonPathBooleanValue("$[0].attributes['boolean.attribute']").isTrue();
+		assertThat(content).extractingJsonPathStringValue("$[0].attributes['my.scope.attribute']")
+			.isEqualTo("some scope attribute");
+		assertThat(content).extractingJsonPathMapValue("$[0].resourceAttributes").isEmpty();
 	}
 
 	static byte[] compress(byte[] body) throws IOException {
