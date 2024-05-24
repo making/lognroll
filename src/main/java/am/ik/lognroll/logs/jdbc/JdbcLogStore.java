@@ -1,4 +1,4 @@
-package am.ik.lognroll.jdbc;
+package am.ik.lognroll.logs.jdbc;
 
 import java.sql.Timestamp;
 import java.util.List;
