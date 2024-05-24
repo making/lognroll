@@ -1,10 +1,11 @@
-package am.ik.lognroll.logs;
+package am.ik.lognroll.otlp;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPOutputStream;
 
+import am.ik.lognroll.logs.LogStore;
 import com.google.protobuf.util.JsonFormat;
 import io.opentelemetry.proto.logs.v1.LogsData;
 import am.ik.lognroll.IntegrationTestBase;

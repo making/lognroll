@@ -1,7 +1,9 @@
-package am.ik.lognroll.logs;
+package am.ik.lognroll.otlp;
 
 import java.util.List;
 
+import am.ik.lognroll.logs.Log;
+import am.ik.lognroll.logs.LogStore;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.opentelemetry.proto.logs.v1.LogsData;
 
