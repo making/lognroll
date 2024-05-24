@@ -1,4 +1,4 @@
-package ik.am.lognroll.config;
+package am.ik.lognroll.config;
 
 import java.util.function.Predicate;
 

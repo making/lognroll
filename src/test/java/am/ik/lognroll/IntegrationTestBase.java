@@ -1,4 +1,4 @@
-package ik.am.lognroll;
+package am.ik.lognroll;
 
 import org.junit.jupiter.api.BeforeEach;
 

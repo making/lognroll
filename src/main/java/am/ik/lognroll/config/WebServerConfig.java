@@ -1,4 +1,4 @@
-package ik.am.lognroll.config;
+package am.ik.lognroll.config;
 
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 

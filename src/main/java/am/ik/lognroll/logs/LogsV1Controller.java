@@ -1,4 +1,4 @@
-package ik.am.lognroll.logs;
+package am.ik.lognroll.logs;
 
 import java.time.Instant;
 import java.util.HashMap;

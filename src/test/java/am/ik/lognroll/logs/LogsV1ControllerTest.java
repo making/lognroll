@@ -1,4 +1,4 @@
-package ik.am.lognroll.logs;
+package am.ik.lognroll.logs;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.util.zip.GZIPOutputStream;
 
 import com.google.protobuf.util.JsonFormat;
 import io.opentelemetry.proto.logs.v1.LogsData;
-import ik.am.lognroll.IntegrationTestBase;
+import am.ik.lognroll.IntegrationTestBase;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.io.ClassPathResource;

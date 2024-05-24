@@ -1,4 +1,4 @@
-package ik.am.lognroll;
+package am.ik.lognroll;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.TestConfiguration;
