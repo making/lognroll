@@ -51,8 +51,8 @@ interface Log {
     body: string;
     traceId: string;
     spanId: string;
-    attributes: Record<string, any>;
-    resourceAttributes: Record<string, any>;
+    attributes: Record<string, object>;
+    resourceAttributes: Record<string, object>;
 }
 
 const LogViewer: React.FC = () => {
@@ -68,7 +68,7 @@ const LogViewer: React.FC = () => {
     const [showLoadMore, setShowLoadMore] = useState<boolean>(false);
 
     const fetchLogs = async () => {
-        let url = buildUrl({size, query, filter, from, to});
+        const url = buildUrl({size, query, filter, from, to});
         setIsLoading(true);
         try {
             const response = await fetch(url);
