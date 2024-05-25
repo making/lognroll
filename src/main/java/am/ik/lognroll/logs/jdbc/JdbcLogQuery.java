@@ -62,11 +62,9 @@ public class JdbcLogQuery implements LogQuery {
 		Cursor cursor = request.pageRequest().cursor();
 		if (cursor != null) {
 			sql.append("""
-					AND timestamp <= :timestamp
-					AND log_id < :log_id
+					AND timestamp < :timestamp
 					""");
 			params.put("timestamp", Timestamp.from(cursor.timestamp()));
-			params.put("log_id", cursor.logId());
 		}
 		if (StringUtils.hasText(query)) {
 			sql.append("""
