@@ -42,6 +42,7 @@ class LogsV1ControllerTest extends IntegrationTestBase {
 		ResponseEntity<Void> response = this.restClient.post()
 			.uri("/v1/logs")
 			.contentType(MediaType.APPLICATION_PROTOBUF)
+			.header(HttpHeaders.AUTHORIZATION, "Bearer changeme")
 			.body(builder.build())
 			.retrieve()
 			.toBodilessEntity();
@@ -58,6 +59,7 @@ class LogsV1ControllerTest extends IntegrationTestBase {
 		ResponseEntity<Void> response = this.restClient.post()
 			.uri("/v1/logs")
 			.contentType(MediaType.APPLICATION_PROTOBUF)
+			.header(HttpHeaders.AUTHORIZATION, "Bearer changeme")
 			.header(HttpHeaders.CONTENT_ENCODING, "gzip")
 			.body(compress(builder.build().toByteArray()))
 			.retrieve()
@@ -73,6 +75,7 @@ class LogsV1ControllerTest extends IntegrationTestBase {
 		ResponseEntity<Void> response = this.restClient.post()
 			.uri("/v1/logs")
 			.contentType(MediaType.APPLICATION_JSON)
+			.header(HttpHeaders.AUTHORIZATION, "Bearer changeme")
 			.body(json)
 			.retrieve()
 			.toBodilessEntity();
@@ -86,6 +89,7 @@ class LogsV1ControllerTest extends IntegrationTestBase {
 		ResponseEntity<Void> response = this.restClient.post()
 			.uri("/v1/logs")
 			.contentType(MediaType.APPLICATION_JSON)
+			.header(HttpHeaders.AUTHORIZATION, "Bearer changeme")
 			.header(HttpHeaders.CONTENT_ENCODING, "gzip")
 			.body(compress(json))
 			.retrieve()
@@ -95,7 +99,11 @@ class LogsV1ControllerTest extends IntegrationTestBase {
 	}
 
 	void assertData() {
-		String logs = this.restClient.get().uri("/api/logs").retrieve().body(String.class);
+		String logs = this.restClient.get()
+			.uri("/api/logs")
+			.header(HttpHeaders.AUTHORIZATION, "Bearer changeme")
+			.retrieve()
+			.body(String.class);
 		JsonContent<Object> content = this.json.from(logs);
 		assertThat(content).extractingJsonPathNumberValue("$.length()").isEqualTo(1);
 		assertThat(content).extractingJsonPathNumberValue("$[0].logId").isNotNull();

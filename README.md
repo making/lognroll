@@ -13,7 +13,7 @@ a simple log store
 ## Send a example record
 
 ```
-cat src/test/resources/logs.json | curl -H "Content-Type: application/json" -s http://localhost:4318/v1/logs --data-binary @- -v
+cat src/test/resources/logs.json | curl -H "Content-Type: application/json" -H "Authorization: Bearer changeme" -s http://localhost:4318/v1/logs --data-binary @- -v
 ```
 
 then, check the stored data
