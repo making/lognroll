@@ -26,7 +26,7 @@ public class SimpleAuthInterceptor implements HandlerInterceptor {
 			String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 			boolean authorized = false;
 			if (StringUtils.hasText(authorization)) {
-				if (authorization.toLowerCase().startsWith("bearer") || authorization.startsWith("bearer")) {
+				if (authorization.startsWith("Bearer") || authorization.startsWith("bearer")) {
 					final String token = authorization.replace("Bearer ", "").replace("bearer ", "");
 					if (Objects.equals(this.props.token(), token)) {
 						authorized = true;
