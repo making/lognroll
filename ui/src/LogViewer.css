@@ -1,0 +1,35 @@
+div#log-viewer {
+    font-size: small;
+}
+
+/* LogEventViewer.css */
+.overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: rgba(0, 255, 255, 0.7);
+    padding: 10px;
+    z-index: 1000;
+}
+
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.table th, .table td {
+    border: 1px solid snow;
+    padding: 5px;
+    white-space: pre;
+    font-size: small;
+}
+
+.table td {
+    text-align: left;
+}
+
+#load-more {
+    width: 90%;
+}
