@@ -33,3 +33,9 @@ div#log-viewer {
 #load-more {
     width: 90%;
 }
+
+@media (prefers-color-scheme: light) {
+    .table th, .table td {
+        border-color: #1a1a1a;
+    }
+}
