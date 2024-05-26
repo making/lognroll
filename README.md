@@ -23,7 +23,7 @@ Java 21+ is required.
 java -jar target/lognroll-0.0.1-SNAPSHOT.jar
 ```
 
-* OTLP/HTTP endpoint: http://localhost:4318
+* OTLP/HTTP endpoint: http://localhost:4318/v1/logs
 * Default bearer token: `changeme` (you can change the token with `--lognroll.auth.token=verysecuretoken`)
 
 ## Send a example record
