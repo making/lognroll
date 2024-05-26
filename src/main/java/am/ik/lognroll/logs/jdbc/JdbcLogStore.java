@@ -37,8 +37,8 @@ public class JdbcLogStore implements LogStore {
 		int count = Objects.requireNonNull(this.jdbcTemplate
 			.queryForObject("SELECT COUNT(digest) FROM resource_attributes WHERE digest = ?", Integer.class, digest));
 		if (count == 0) {
-			this.jdbcTemplate.update("INSERT INTO resource_attributes(digest, attributes) VALUES (?, ?)", digest,
-					Json.stringify(this.objectMapper, firstLog.resourceAttributes()));
+			this.jdbcTemplate.update("INSERT INTO resource_attributes(digest, resource_attributes) VALUES (?, ?)",
+					digest, Json.stringify(this.objectMapper, firstLog.resourceAttributes()));
 		}
 		this.jdbcTemplate.batchUpdate("""
 				INSERT INTO log(

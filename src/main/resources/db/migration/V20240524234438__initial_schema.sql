@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS resource_attributes
 (
-    digest     INTEGER PRIMARY KEY NOT NULL,
-    attributes JSON
+    digest              INTEGER PRIMARY KEY NOT NULL,
+    resource_attributes JSON
 );
 
 CREATE TABLE IF NOT EXISTS log

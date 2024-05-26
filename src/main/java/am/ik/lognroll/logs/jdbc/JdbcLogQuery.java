@@ -8,6 +8,8 @@ import java.util.Map;
 import am.ik.lognroll.logs.Log;
 import am.ik.lognroll.logs.LogBuilder;
 import am.ik.lognroll.logs.LogQuery;
+import am.ik.lognroll.logs.filter.FilterExpressionConverter;
+import am.ik.lognroll.logs.filter.converter.Sqlite3FilterExpressionConverter;
 import am.ik.lognroll.util.Json;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,6 +23,8 @@ public class JdbcLogQuery implements LogQuery {
 	private final JdbcClient jdbcClient;
 
 	private final ObjectMapper objectMapper;
+
+	private final FilterExpressionConverter converter = new Sqlite3FilterExpressionConverter();
 
 	public JdbcLogQuery(JdbcClient jdbcClient, ObjectMapper objectMapper) {
 		this.jdbcClient = jdbcClient;
@@ -40,7 +44,7 @@ public class JdbcLogQuery implements LogQuery {
 				       log.trace_id,
 				       log.span_id,
 				       log.attributes,
-				       resource_attributes.attributes AS resource_attributes
+				       resource_attributes.resource_attributes
 				""");
 		Map<String, Object> params = new HashMap<>();
 		String query = request.query();
@@ -69,11 +73,28 @@ public class JdbcLogQuery implements LogQuery {
 			params.put("timestamp", Timestamp.from(cursor.timestamp()));
 			params.put("observed_timestamp", Timestamp.from(cursor.observedTimestamp()));
 		}
+		if (request.from() != null) {
+			sql.append("""
+					AND timestamp >= :from
+					""");
+			params.put("from", Timestamp.from(request.from()));
+		}
+		if (request.to() != null) {
+			sql.append("""
+					AND timestamp <= :to
+					""");
+			params.put("to", Timestamp.from(request.to()));
+		}
 		if (StringUtils.hasText(query)) {
 			sql.append("""
 					AND log_fts MATCH(:query)
 					""");
 			params.put("query", "\"" + query + "\"");
+		}
+		if (request.filterExpression() != null) {
+			sql.append("AND ")
+				.append(this.converter.convertExpression(request.filterExpression()))
+				.append(System.lineSeparator());
 		}
 		sql.append("""
 				ORDER BY timestamp DESC, observed_timestamp DESC
