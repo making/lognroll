@@ -40,6 +40,7 @@ $ curl -s http://localhost:4318/api/logs -H "Authorization: Bearer changeme" | j
   {
     "logId": 1,
     "timestamp": "2018-12-13T14:51:00.300Z",
+    "observedTimestamp": "2018-12-13T14:51:00.300Z",
     "severity": "Information",
     "serviceName": "my.service",
     "scope": "my.library",
