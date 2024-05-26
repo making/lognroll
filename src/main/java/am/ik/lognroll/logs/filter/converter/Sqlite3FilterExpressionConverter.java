@@ -73,14 +73,16 @@ public class Sqlite3FilterExpressionConverter extends AbstractFilterExpressionCo
 		if (matcher.matches()) {
 			String column = matcher.group(1) != null ? matcher.group(1) : matcher.group(3);
 			String name = matcher.group(2) != null ? matcher.group(2) : matcher.group(4);
-			context.append("json_extract(")
-				.append(toSnakeCase(column))
-				.append(", '$.")
-				.append(name.contains(".") ? "\"" + name + "\"" : name)
-				.append("')");
+			jsonExtract(context, column, name);
 		}
 		else {
-			context.append(toSnakeCase(identifier));
+			if (identifier.contains(".")) {
+				String[] vals = identifier.split("\\.", 2);
+				jsonExtract(context, vals[0], vals[1]);
+			}
+			else {
+				context.append(toSnakeCase(identifier));
+			}
 		}
 	}
 
@@ -94,7 +96,15 @@ public class Sqlite3FilterExpressionConverter extends AbstractFilterExpressionCo
 		context.append(")");
 	}
 
-	public static String toSnakeCase(String camelCase) {
+	void jsonExtract(StringBuilder context, String column, String name) {
+		context.append("json_extract(")
+			.append(toSnakeCase(column))
+			.append(", '$.")
+			.append(name.contains(".") ? "\"" + name + "\"" : name)
+			.append("')");
+	}
+
+	static String toSnakeCase(String camelCase) {
 		if (camelCase == null || camelCase.isEmpty()) {
 			return camelCase;
 		}

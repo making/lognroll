@@ -167,4 +167,11 @@ public class Sqlite3FilterExpressionConverterTests {
 			.isEqualTo("json_extract(resource_attributes, '$.\"user_agent.original\"') == \"kube-probe//\"");
 	}
 
+	@Test
+	public void testDotAttributes() {
+		String vectorExpr = converter.convertExpression(new Filter.Expression(Filter.ExpressionType.EQ,
+				new Filter.Key("attributes.country"), new Filter.Value("BG")));
+		assertThat(vectorExpr).isEqualTo("json_extract(attributes, '$.country') == \"BG\"");
+	}
+
 }
