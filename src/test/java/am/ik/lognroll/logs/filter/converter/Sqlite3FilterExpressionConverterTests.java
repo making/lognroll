@@ -94,7 +94,7 @@ public class Sqlite3FilterExpressionConverterTests {
 					new Filter.Expression(Filter.ExpressionType.IN, new Filter.Key("country"),
 							new Filter.Value(List.of("BG", "NL", "US")))));
 
-		assertThat(vectorExpr).isEqualTo("isOpen == true AND year >= 2020 AND country IN [\"BG\",\"NL\",\"US\"]");
+		assertThat(vectorExpr).isEqualTo("is_open == true AND year >= 2020 AND country IN [\"BG\",\"NL\",\"US\"]");
 	}
 
 	@Test
