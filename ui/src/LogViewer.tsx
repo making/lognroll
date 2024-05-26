@@ -182,16 +182,16 @@ const LogViewer: React.FC = () => {
             <table className="table">
                 <thead>
                 <tr>
-                    <th>Timestamp</th>
-                    <th>Observed Timestamp</th>
-                    <th>Severity</th>
-                    <th>Service Name</th>
-                    <th>Scope</th>
-                    <th>Body</th>
-                    <th>Trace Id</th>
-                    <th>Span Id</th>
-                    <th>Attributes</th>
-                    <th>Resource Attributes</th>
+                    <th>timestamp</th>
+                    <th>observed_timestamp</th>
+                    <th>severity</th>
+                    <th>service_name</th>
+                    <th>scope</th>
+                    <th>body</th>
+                    <th>trace_id</th>
+                    <th>span_id</th>
+                    <th>attributes</th>
+                    <th>resource_attributes</th>
                 </tr>
                 </thead>
                 <tbody>
