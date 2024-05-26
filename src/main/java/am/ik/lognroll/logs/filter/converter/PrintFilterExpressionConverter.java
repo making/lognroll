@@ -26,6 +26,7 @@ import am.ik.lognroll.logs.filter.Filter.Key;
  */
 public class PrintFilterExpressionConverter extends AbstractFilterExpressionConverter {
 
+	@Override
 	public void doExpression(Expression expression, StringBuilder context) {
 		this.convertOperand(expression.left(), context);
 		context.append(" " + expression.type() + " ");
@@ -33,6 +34,7 @@ public class PrintFilterExpressionConverter extends AbstractFilterExpressionConv
 
 	}
 
+	@Override
 	public void doKey(Key key, StringBuilder context) {
 		context.append(key.key());
 	}

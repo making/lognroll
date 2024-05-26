@@ -18,10 +18,13 @@ package am.ik.lognroll.logs.filter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import am.ik.lognroll.logs.filter.Filter.Expression;
 import am.ik.lognroll.logs.filter.Filter.ExpressionType;
 import am.ik.lognroll.logs.filter.Filter.Operand;
+import jakarta.annotation.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -65,7 +68,7 @@ public class FilterHelper {
 	 * @param operand Filter expression to negate.
 	 * @return Returns an negation of the input expression.
 	 */
-	public static Filter.Operand negate(Filter.Operand operand) {
+	public static Filter.Operand negate(@Nullable Filter.Operand operand) {
 
 		if (operand instanceof Filter.Group group) {
 			Operand inEx = negate(group.content());
@@ -80,24 +83,26 @@ public class FilterHelper {
 					return negate(exp.left());
 				case AND: // NOT(a AND b) = NOT(a) OR NOT(b)
 				case OR: // NOT(a OR b) = NOT(a) AND NOT(b)
-					return new Filter.Expression(TYPE_NEGATION_MAP.get(exp.type()), negate(exp.left()),
-							negate(exp.right()));
+					return new Filter.Expression(Objects.requireNonNull(TYPE_NEGATION_MAP.get(exp.type())),
+							negate(exp.left()), negate(exp.right()));
 				case EQ: // NOT(e EQ b) = e NE b
 				case NE: // NOT(e NE b) = e EQ b
 				case GT: // NOT(e GT b) = e LTE b
 				case GTE: // NOT(e GTE b) = e LT b
 				case LT: // NOT(e LT b) = e GTE b
 				case LTE: // NOT(e LTE b) = e GT b
-					return new Filter.Expression(TYPE_NEGATION_MAP.get(exp.type()), exp.left(), exp.right());
+					return new Filter.Expression(Objects.requireNonNull(TYPE_NEGATION_MAP.get(exp.type())), exp.left(),
+							exp.right());
 				case IN: // NOT(e IN [...]) = e NIN [...]
 				case NIN: // NOT(e NIN [...]) = e IN [...]
-					return new Filter.Expression(TYPE_NEGATION_MAP.get(exp.type()), exp.left(), exp.right());
+					return new Filter.Expression(Objects.requireNonNull(TYPE_NEGATION_MAP.get(exp.type())), exp.left(),
+							exp.right());
 				default:
 					throw new IllegalArgumentException("Unknown expression type: " + exp.type());
 			}
 		}
 		else {
-			throw new IllegalArgumentException("Can not negate operand of type: " + operand.getClass());
+			throw new IllegalArgumentException("Can not negate operand of type: " + operand);
 		}
 	}
 
@@ -179,7 +184,7 @@ public class FilterHelper {
 		}
 		else {
 			throw new IllegalStateException(
-					"Filter IN right expression should be of Filter.Value type but was " + exp.right().getClass());
+					"Filter IN right expression should be of Filter.Value type but was " + exp.right());
 		}
 	}
 

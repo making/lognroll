@@ -24,6 +24,7 @@ import am.ik.lognroll.logs.filter.Filter.Expression;
 import am.ik.lognroll.logs.filter.Filter.ExpressionType;
 import am.ik.lognroll.logs.filter.Filter.Group;
 import am.ik.lognroll.logs.filter.Filter.Operand;
+import jakarta.annotation.Nullable;
 
 /**
  * @author Christian Tzolov
@@ -41,7 +42,7 @@ public abstract class AbstractFilterExpressionConverter implements FilterExpress
 		return context.toString();
 	}
 
-	protected void convertOperand(Operand operand, StringBuilder context) {
+	protected void convertOperand(@Nullable Operand operand, StringBuilder context) {
 
 		if (operand instanceof Filter.Group group) {
 			this.doGroup(group, context);
