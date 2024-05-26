@@ -1,6 +1,6 @@
 # LogN'Roll
 
-a simple log store
+a simple OTLP log store
 
 ![logo](./logo.png)
 
