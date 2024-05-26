@@ -67,7 +67,7 @@ $ curl -s http://localhost:4318/api/logs -H "Authorization: Bearer changeme" | j
 ]
 ```
 
-Go to the web UI http://localhost:4318
+Go to the web UI http://localhost:4318 (username: empty, password: `changeme` same as token)
 
 <img width="1024" alt="image" src="https://github.com/making/lognroll/assets/106908/d0d11eea-cc13-4eb5-aa1f-119403157389">
 
