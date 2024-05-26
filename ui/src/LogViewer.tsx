@@ -64,7 +64,7 @@ const LogViewer: React.FC = () => {
     const [from, setFrom] = useState<string>('');
     const [to, setTo] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [jsonToTable, setJsonToTable] = useState<boolean>(true);
+    const [jsonToTable, setJsonToTable] = useState<boolean>(false);
     const [useLocalTimezone, setUseLocalTimezone] = useState<boolean>(true);
     const [showLoadMore, setShowLoadMore] = useState<boolean>(false);
 
@@ -163,7 +163,7 @@ const LogViewer: React.FC = () => {
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setJsonToTable(e.target.checked)}
                     disabled={isLoading}
                 />
-                json to table
+                to table
             </label>&nbsp;
             <label>
                 <input
