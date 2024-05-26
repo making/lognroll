@@ -188,6 +188,18 @@ public class FilterExpressionTextParserTests {
 
 		exp = parser.parse("\"country 1 2 3\" == 'BG'");
 		assertThat(exp).isEqualTo(new Expression(EQ, new Key("\"country 1 2 3\""), new Value("BG")));
+
+		exp = parser.parse("_id1 == 100");
+		assertThat(exp)
+			.isEqualTo(new Filter.Expression(Filter.ExpressionType.EQ, new Filter.Key("_id1"), new Filter.Value(100)));
+
+		exp = parser.parse("example.com/foo == 'bar'");
+		assertThat(exp).isEqualTo(new Filter.Expression(Filter.ExpressionType.EQ, new Filter.Key("example.com/foo"),
+				new Filter.Value("bar")));
+
+		exp = parser.parse("attributes[\"method\"] == 'GET'");
+		assertThat(exp).isEqualTo(new Filter.Expression(Filter.ExpressionType.EQ,
+				new Filter.Key("attributes[\"method\"]"), new Filter.Value("GET")));
 	}
 
 }

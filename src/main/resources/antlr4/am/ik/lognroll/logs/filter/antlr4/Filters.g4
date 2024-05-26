@@ -44,8 +44,7 @@ compare:
     EQUALS | GT | GE | LT | LE | NE;
 
 identifier
-    : IDENTIFIER DOT IDENTIFIER
-    | IDENTIFIER
+    : IDENTIFIER (DOT IDENTIFIER | LEFT_SQUARE_BRACKETS QUOTED_STRING RIGHT_SQUARE_BRACKETS)*
     | QUOTED_STRING
     ;
 
@@ -97,7 +96,7 @@ DECIMAL_VALUE
     ;
 
 IDENTIFIER
-    : (LETTER | DIGIT)+
+    : (LETTER | DIGIT | SYMBOL)+
     ;
 
 fragment DECIMAL_DIGITS
@@ -111,6 +110,10 @@ fragment DIGIT
 
 fragment LETTER
     : [a-zA-Z]
+    ;
+
+fragment SYMBOL
+    : '_' | '/'
     ;
 
 WS

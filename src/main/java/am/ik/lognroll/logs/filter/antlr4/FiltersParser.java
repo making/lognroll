@@ -1,4 +1,4 @@
-// Generated from org/springframework/ai/vectorstore/filter/antlr4/Filters.g4 by ANTLR 4.13.1
+// Generated from am/ik/lognroll/logs/filter/antlr4/Filters.g4 by ANTLR 4.13.1
 package am.ik.lognroll.logs.filter.antlr4;
 
 /*
@@ -24,8 +24,11 @@ package am.ik.lognroll.logs.filter.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({ "all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue" })
 public class FiltersParser extends Parser {
@@ -876,12 +879,36 @@ public class FiltersParser extends Parser {
 			return getToken(FiltersParser.IDENTIFIER, i);
 		}
 
-		public TerminalNode DOT() {
-			return getToken(FiltersParser.DOT, 0);
+		public List<TerminalNode> DOT() {
+			return getTokens(FiltersParser.DOT);
 		}
 
-		public TerminalNode QUOTED_STRING() {
-			return getToken(FiltersParser.QUOTED_STRING, 0);
+		public TerminalNode DOT(int i) {
+			return getToken(FiltersParser.DOT, i);
+		}
+
+		public List<TerminalNode> LEFT_SQUARE_BRACKETS() {
+			return getTokens(FiltersParser.LEFT_SQUARE_BRACKETS);
+		}
+
+		public TerminalNode LEFT_SQUARE_BRACKETS(int i) {
+			return getToken(FiltersParser.LEFT_SQUARE_BRACKETS, i);
+		}
+
+		public List<TerminalNode> QUOTED_STRING() {
+			return getTokens(FiltersParser.QUOTED_STRING);
+		}
+
+		public TerminalNode QUOTED_STRING(int i) {
+			return getToken(FiltersParser.QUOTED_STRING, i);
+		}
+
+		public List<TerminalNode> RIGHT_SQUARE_BRACKETS() {
+			return getTokens(FiltersParser.RIGHT_SQUARE_BRACKETS);
+		}
+
+		public TerminalNode RIGHT_SQUARE_BRACKETS(int i) {
+			return getToken(FiltersParser.RIGHT_SQUARE_BRACKETS, i);
 		}
 
 		public IdentifierContext(ParserRuleContext parent, int invokingState) {
@@ -918,32 +945,57 @@ public class FiltersParser extends Parser {
 	public final IdentifierContext identifier() throws RecognitionException {
 		IdentifierContext _localctx = new IdentifierContext(_ctx, getState());
 		enterRule(_localctx, 8, RULE_identifier);
+		int _la;
 		try {
-			setState(70);
+			setState(77);
 			_errHandler.sync(this);
-			switch (getInterpreter().adaptivePredict(_input, 5, _ctx)) {
-				case 1:
+			switch (_input.LA(1)) {
+				case IDENTIFIER:
 					enterOuterAlt(_localctx, 1); {
 					setState(65);
 					match(IDENTIFIER);
-					setState(66);
-					match(DOT);
-					setState(67);
-					match(IDENTIFIER);
+					setState(73);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+					while (_la == DOT || _la == LEFT_SQUARE_BRACKETS) {
+						{
+							setState(71);
+							_errHandler.sync(this);
+							switch (_input.LA(1)) {
+								case DOT: {
+									setState(66);
+									match(DOT);
+									setState(67);
+									match(IDENTIFIER);
+								}
+									break;
+								case LEFT_SQUARE_BRACKETS: {
+									setState(68);
+									match(LEFT_SQUARE_BRACKETS);
+									setState(69);
+									match(QUOTED_STRING);
+									setState(70);
+									match(RIGHT_SQUARE_BRACKETS);
+								}
+									break;
+								default:
+									throw new NoViableAltException(this);
+							}
+						}
+						setState(75);
+						_errHandler.sync(this);
+						_la = _input.LA(1);
+					}
 				}
 					break;
-				case 2:
+				case QUOTED_STRING:
 					enterOuterAlt(_localctx, 2); {
-					setState(68);
-					match(IDENTIFIER);
-				}
-					break;
-				case 3:
-					enterOuterAlt(_localctx, 3); {
-					setState(69);
+					setState(76);
 					match(QUOTED_STRING);
 				}
 					break;
+				default:
+					throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1136,18 +1188,18 @@ public class FiltersParser extends Parser {
 		int _la;
 		try {
 			int _alt;
-			setState(86);
+			setState(93);
 			_errHandler.sync(this);
-			switch (getInterpreter().adaptivePredict(_input, 9, _ctx)) {
+			switch (getInterpreter().adaptivePredict(_input, 11, _ctx)) {
 				case 1:
 					_localctx = new IntegerConstantContext(_localctx);
 					enterOuterAlt(_localctx, 1); {
-					setState(73);
+					setState(80);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					if (_la == MINUS || _la == PLUS) {
 						{
-							setState(72);
+							setState(79);
 							_la = _input.LA(1);
 							if (!(_la == MINUS || _la == PLUS)) {
 								_errHandler.recoverInline(this);
@@ -1161,19 +1213,19 @@ public class FiltersParser extends Parser {
 						}
 					}
 
-					setState(75);
+					setState(82);
 					match(INTEGER_VALUE);
 				}
 					break;
 				case 2:
 					_localctx = new DecimalConstantContext(_localctx);
 					enterOuterAlt(_localctx, 2); {
-					setState(77);
+					setState(84);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					if (_la == MINUS || _la == PLUS) {
 						{
-							setState(76);
+							setState(83);
 							_la = _input.LA(1);
 							if (!(_la == MINUS || _la == PLUS)) {
 								_errHandler.recoverInline(this);
@@ -1187,21 +1239,21 @@ public class FiltersParser extends Parser {
 						}
 					}
 
-					setState(79);
+					setState(86);
 					match(DECIMAL_VALUE);
 				}
 					break;
 				case 3:
 					_localctx = new TextConstantContext(_localctx);
 					enterOuterAlt(_localctx, 3); {
-					setState(81);
+					setState(88);
 					_errHandler.sync(this);
 					_alt = 1;
 					do {
 						switch (_alt) {
 							case 1: {
 								{
-									setState(80);
+									setState(87);
 									match(QUOTED_STRING);
 								}
 							}
@@ -1209,9 +1261,9 @@ public class FiltersParser extends Parser {
 							default:
 								throw new NoViableAltException(this);
 						}
-						setState(83);
+						setState(90);
 						_errHandler.sync(this);
-						_alt = getInterpreter().adaptivePredict(_input, 8, _ctx);
+						_alt = getInterpreter().adaptivePredict(_input, 10, _ctx);
 					}
 					while (_alt != 2 && _alt != org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER);
 				}
@@ -1219,7 +1271,7 @@ public class FiltersParser extends Parser {
 				case 4:
 					_localctx = new BooleanConstantContext(_localctx);
 					enterOuterAlt(_localctx, 4); {
-					setState(85);
+					setState(92);
 					match(BOOLEAN_VALUE);
 				}
 					break;
@@ -1254,7 +1306,7 @@ public class FiltersParser extends Parser {
 		return true;
 	}
 
-	public static final String _serializedATN = "\u0004\u0001\u001aY\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"
+	public static final String _serializedATN = "\u0004\u0001\u001a`\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"
 			+ "\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"
 			+ "\u0005\u0007\u0005\u0001\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001"
 			+ "\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001"
@@ -1265,14 +1317,15 @@ public class FiltersParser extends Parser {
 			+ "\u0001\u0005\u00010\b\u0001\n\u0001\f\u00013\t\u0001\u0001\u0002\u0001"
 			+ "\u0002\u0001\u0002\u0001\u0002\u0005\u00029\b\u0002\n\u0002\f\u0002<\t"
 			+ "\u0002\u0001\u0002\u0001\u0002\u0001\u0003\u0001\u0003\u0001\u0004\u0001"
-			+ "\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0003\u0004G\b\u0004\u0001"
-			+ "\u0005\u0003\u0005J\b\u0005\u0001\u0005\u0001\u0005\u0003\u0005N\b\u0005"
-			+ "\u0001\u0005\u0001\u0005\u0004\u0005R\b\u0005\u000b\u0005\f\u0005S\u0001"
-			+ "\u0005\u0003\u0005W\b\u0005\u0001\u0005\u0000\u0001\u0002\u0006\u0000"
+			+ "\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0005\u0004H\b"
+			+ "\u0004\n\u0004\f\u0004K\t\u0004\u0001\u0004\u0003\u0004N\b\u0004\u0001"
+			+ "\u0005\u0003\u0005Q\b\u0005\u0001\u0005\u0001\u0005\u0003\u0005U\b\u0005"
+			+ "\u0001\u0005\u0001\u0005\u0004\u0005Y\b\u0005\u000b\u0005\f\u0005Z\u0001"
+			+ "\u0005\u0003\u0005^\b\u0005\u0001\u0005\u0000\u0001\u0002\u0006\u0000"
 			+ "\u0002\u0004\u0006\b\n\u0000\u0002\u0002\u0000\b\b\u000b\u000f\u0001\u0000"
-			+ "\t\nb\u0000\f\u0001\u0000\u0000\u0000\u0002\'\u0001\u0000\u0000\u0000"
-			+ "\u00044\u0001\u0000\u0000\u0000\u0006?\u0001\u0000\u0000\u0000\bF\u0001"
-			+ "\u0000\u0000\u0000\nV\u0001\u0000\u0000\u0000\f\r\u0005\u0001\u0000\u0000"
+			+ "\t\nj\u0000\f\u0001\u0000\u0000\u0000\u0002\'\u0001\u0000\u0000\u0000"
+			+ "\u00044\u0001\u0000\u0000\u0000\u0006?\u0001\u0000\u0000\u0000\bM\u0001"
+			+ "\u0000\u0000\u0000\n]\u0001\u0000\u0000\u0000\f\r\u0005\u0001\u0000\u0000"
 			+ "\r\u000e\u0003\u0002\u0001\u0000\u000e\u000f\u0005\u0000\u0000\u0001\u000f"
 			+ "\u0001\u0001\u0000\u0000\u0000\u0010\u0011\u0006\u0001\uffff\uffff\u0000"
 			+ "\u0011\u0012\u0003\b\u0004\u0000\u0012\u0013\u0003\u0006\u0003\u0000\u0013"
@@ -1297,18 +1350,21 @@ public class FiltersParser extends Parser {
 			+ "\u0000\u0000\u0000:8\u0001\u0000\u0000\u0000:;\u0001\u0000\u0000\u0000"
 			+ ";=\u0001\u0000\u0000\u0000<:\u0001\u0000\u0000\u0000=>\u0005\u0005\u0000"
 			+ "\u0000>\u0005\u0001\u0000\u0000\u0000?@\u0007\u0000\u0000\u0000@\u0007"
-			+ "\u0001\u0000\u0000\u0000AB\u0005\u0019\u0000\u0000BC\u0005\u0002\u0000"
-			+ "\u0000CG\u0005\u0019\u0000\u0000DG\u0005\u0019\u0000\u0000EG\u0005\u0016"
-			+ "\u0000\u0000FA\u0001\u0000\u0000\u0000FD\u0001\u0000\u0000\u0000FE\u0001"
-			+ "\u0000\u0000\u0000G\t\u0001\u0000\u0000\u0000HJ\u0007\u0001\u0000\u0000"
-			+ "IH\u0001\u0000\u0000\u0000IJ\u0001\u0000\u0000\u0000JK\u0001\u0000\u0000"
-			+ "\u0000KW\u0005\u0017\u0000\u0000LN\u0007\u0001\u0000\u0000ML\u0001\u0000"
-			+ "\u0000\u0000MN\u0001\u0000\u0000\u0000NO\u0001\u0000\u0000\u0000OW\u0005"
-			+ "\u0018\u0000\u0000PR\u0005\u0016\u0000\u0000QP\u0001\u0000\u0000\u0000"
-			+ "RS\u0001\u0000\u0000\u0000SQ\u0001\u0000\u0000\u0000ST\u0001\u0000\u0000"
-			+ "\u0000TW\u0001\u0000\u0000\u0000UW\u0005\u0015\u0000\u0000VI\u0001\u0000"
-			+ "\u0000\u0000VM\u0001\u0000\u0000\u0000VQ\u0001\u0000\u0000\u0000VU\u0001"
-			+ "\u0000\u0000\u0000W\u000b\u0001\u0000\u0000\u0000\n\u001d\'/1:FIMSV";
+			+ "\u0001\u0000\u0000\u0000AI\u0005\u0019\u0000\u0000BC\u0005\u0002\u0000"
+			+ "\u0000CH\u0005\u0019\u0000\u0000DE\u0005\u0004\u0000\u0000EF\u0005\u0016"
+			+ "\u0000\u0000FH\u0005\u0005\u0000\u0000GB\u0001\u0000\u0000\u0000GD\u0001"
+			+ "\u0000\u0000\u0000HK\u0001\u0000\u0000\u0000IG\u0001\u0000\u0000\u0000"
+			+ "IJ\u0001\u0000\u0000\u0000JN\u0001\u0000\u0000\u0000KI\u0001\u0000\u0000"
+			+ "\u0000LN\u0005\u0016\u0000\u0000MA\u0001\u0000\u0000\u0000ML\u0001\u0000"
+			+ "\u0000\u0000N\t\u0001\u0000\u0000\u0000OQ\u0007\u0001\u0000\u0000PO\u0001"
+			+ "\u0000\u0000\u0000PQ\u0001\u0000\u0000\u0000QR\u0001\u0000\u0000\u0000"
+			+ "R^\u0005\u0017\u0000\u0000SU\u0007\u0001\u0000\u0000TS\u0001\u0000\u0000"
+			+ "\u0000TU\u0001\u0000\u0000\u0000UV\u0001\u0000\u0000\u0000V^\u0005\u0018"
+			+ "\u0000\u0000WY\u0005\u0016\u0000\u0000XW\u0001\u0000\u0000\u0000YZ\u0001"
+			+ "\u0000\u0000\u0000ZX\u0001\u0000\u0000\u0000Z[\u0001\u0000\u0000\u0000"
+			+ "[^\u0001\u0000\u0000\u0000\\^\u0005\u0015\u0000\u0000]P\u0001\u0000\u0000"
+			+ "\u0000]T\u0001\u0000\u0000\u0000]X\u0001\u0000\u0000\u0000]\\\u0001\u0000"
+			+ "\u0000\u0000^\u000b\u0001\u0000\u0000\u0000\f\u001d\'/1:GIMPTZ]";
 
 	public static final ATN _ATN = new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
