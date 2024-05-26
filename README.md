@@ -67,6 +67,8 @@ $ curl -s http://localhost:4318/api/logs -H "Authorization: Bearer changeme" | j
 
 Go to the web UI http://localhost:4318
 
+<img width="1024" alt="image" src="https://github.com/making/lognroll/assets/106908/5864e65a-549f-41b0-81c2-0cfe6b397d36">
+
 ## Send from OTEL Collector
 
 ```yaml
