@@ -9,6 +9,7 @@ a simple OTLP log store
 * Compatible with both Protocol Buffers and JSON
 * Gzip compression supported
 * Stores log data in SQLite3
+* Full-Text search (trigram)
 * Built-in UI
 
 ## Build and run
