@@ -15,10 +15,11 @@ public interface LogQuery {
 
 	}
 
-	record Cursor(Instant timestamp) {
+	record Cursor(Instant timestamp, Instant observedTimestamp) {
 
 		public static Cursor valueOf(String s) {
-			return new Cursor(Instant.parse(s));
+			String[] vals = s.split(",", 2);
+			return new Cursor(Instant.parse(vals[0]), Instant.parse(vals[1]));
 		}
 	}
 

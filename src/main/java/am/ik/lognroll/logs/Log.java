@@ -19,8 +19,9 @@ import io.opentelemetry.proto.resource.v1.Resource;
 import org.jilt.Builder;
 
 @Builder
-public record Log(Long logId, Instant timestamp, String severity, String serviceName, String scope, String body,
-		String traceId, String spanId, Map<String, Object> attributes, Map<String, Object> resourceAttributes) {
+public record Log(Long logId, Instant timestamp, Instant observedTimestamp, String severity, String serviceName,
+		String scope, String body, String traceId, String spanId, Map<String, Object> attributes,
+		Map<String, Object> resourceAttributes) {
 
 	private static final String SERVICE_NAME_ATTR = "service.name";
 
@@ -71,6 +72,7 @@ public record Log(Long logId, Instant timestamp, String severity, String service
 					Map<String, Object> attributes = new HashMap<>(scopeAttributes);
 					LogRecord logRecord = scopeLogs.getLogRecords(k);
 					logBuilder.timestamp(Instant.EPOCH.plusNanos(logRecord.getTimeUnixNano()));
+					logBuilder.observedTimestamp(Instant.EPOCH.plusNanos(logRecord.getObservedTimeUnixNano()));
 					logBuilder.severity(logRecord.getSeverityText());
 					logBuilder.body(anyToObject(logRecord.getBody()).toString() /* TODO */);
 					logBuilder.traceId(HexFormat.of().formatHex(logRecord.getTraceId().toByteArray()));

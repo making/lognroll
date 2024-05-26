@@ -32,6 +32,7 @@ public class JdbcLogQuery implements LogQuery {
 		StringBuilder sql = new StringBuilder("""
 				SELECT log.log_id,
 				       log.timestamp,
+				       log.observed_timestamp,
 				       log.severity,
 				       log.service_name,
 				       log.scope,
@@ -62,9 +63,11 @@ public class JdbcLogQuery implements LogQuery {
 		Cursor cursor = request.pageRequest().cursor();
 		if (cursor != null) {
 			sql.append("""
-					AND timestamp < :timestamp
+					AND timestamp <= :timestamp
+					AND observed_timestamp < :observed_timestamp
 					""");
 			params.put("timestamp", Timestamp.from(cursor.timestamp()));
+			params.put("observed_timestamp", Timestamp.from(cursor.observedTimestamp()));
 		}
 		if (StringUtils.hasText(query)) {
 			sql.append("""
@@ -73,7 +76,7 @@ public class JdbcLogQuery implements LogQuery {
 			params.put("query", "\"" + query + "\"");
 		}
 		sql.append("""
-				ORDER BY timestamp DESC, log_id DESC
+				ORDER BY timestamp DESC, observed_timestamp DESC
 				""");
 		if (request.pageRequest().pageSize() > 0) {
 			sql.append("LIMIT %d".formatted(request.pageRequest().pageSize()));
@@ -83,6 +86,7 @@ public class JdbcLogQuery implements LogQuery {
 			.query((rs, rowNum) -> LogBuilder.log()
 				.logId(rs.getLong("log_id"))
 				.timestamp(rs.getTimestamp("timestamp").toInstant())
+				.observedTimestamp(rs.getTimestamp("observed_timestamp").toInstant())
 				.severity(rs.getString("severity"))
 				.serviceName(rs.getString("service_name"))
 				.scope(rs.getString("scope"))

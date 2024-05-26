@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS log
 (
     log_id                     INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     timestamp                  DATETIME                          NOT NULL,
+    observed_timestamp         DATETIME                          NOT NULL,
     severity                   TEXT,
     service_name               TEXT,
     scope                      TEXT,
@@ -20,6 +21,7 @@ CREATE TABLE IF NOT EXISTS log
 );
 
 CREATE INDEX log_timestamp ON log (timestamp);
+CREATE INDEX log_observed_timestamp ON log (observed_timestamp);
 CREATE INDEX log_service_name ON log (service_name);
 CREATE INDEX log_scope ON log (scope);
 CREATE INDEX log_severity ON log (severity);

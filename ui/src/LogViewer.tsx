@@ -45,14 +45,15 @@ function convertUtcToLocal(utcDateString: string): string {
 interface Log {
     logId: number;
     timestamp: string;
-    severity: string;
-    serviceName: string;
-    scope: string;
-    body: string;
-    traceId: string;
-    spanId: string;
-    attributes: Record<string, object>;
-    resourceAttributes: Record<string, object>;
+    observedTimestamp: string;
+    severity?: string;
+    serviceName?: string;
+    scope?: string;
+    body?: string;
+    traceId?: string;
+    spanId?: string;
+    attributes?: Record<string, object>;
+    resourceAttributes?: Record<string, object>;
 }
 
 const LogViewer: React.FC = () => {
@@ -87,7 +88,14 @@ const LogViewer: React.FC = () => {
             return;
         }
         const lastLog = logs[logs.length - 1];
-        const url = buildUrl({size, query, filter, from, to, cursor: lastLog.timestamp});
+        const url = buildUrl({
+            size,
+            query,
+            filter,
+            from,
+            to,
+            cursor: `${lastLog.timestamp},${lastLog.observedTimestamp}`
+        });
         setIsLoading(true);
         try {
             const response = await fetch(url);
@@ -175,6 +183,7 @@ const LogViewer: React.FC = () => {
                 <thead>
                 <tr>
                     <th>Timestamp</th>
+                    <th>Observed Timestamp</th>
                     <th>Severity</th>
                     <th>Service Name</th>
                     <th>Scope</th>
@@ -188,26 +197,27 @@ const LogViewer: React.FC = () => {
                 <tbody>
                 {logs.map(log => <tr key={log.logId}>
                     <td>{useLocalTimezone ? convertUtcToLocal(log.timestamp) : log.timestamp}</td>
+                    <td>{useLocalTimezone ? convertUtcToLocal(log.observedTimestamp) : log.observedTimestamp}</td>
                     <td>{log.severity}</td>
                     <td>{log.serviceName}</td>
                     <td>{log.scope}</td>
-                    <td>{shouldJsonToTable(log) ? <JSONToHTMLTable data={JSON.parse(log.body)}
-                                                                   tableClassName="table"/> : (shouldLogfmtToTable(log) ?
+                    <td>{log.body && shouldJsonToTable(log) ? <JSONToHTMLTable data={JSON.parse(log.body)}
+                                                                               tableClassName="table"/> : (shouldLogfmtToTable(log) ?
                         <JSONToHTMLTable data={logfmt.parse(log.body)}
                                          tableClassName="table"/> : log.body)}</td>
                     <td>{log.traceId}</td>
                     <td>{log.spanId}</td>
                     <td>
-                        <JSONToHTMLTable
+                        {jsonToTable ? <JSONToHTMLTable
                             data={log.attributes || []}
                             tableClassName="table"
-                        />
+                        /> : logfmt.stringify(log.attributes)}
                     </td>
                     <td>
-                        <JSONToHTMLTable
+                        {jsonToTable ? <JSONToHTMLTable
                             data={log.resourceAttributes || []}
                             tableClassName="table"
-                        />
+                        /> : logfmt.stringify(log.resourceAttributes)}
                     </td>
                 </tr>)}
                 </tbody>

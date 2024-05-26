@@ -43,6 +43,7 @@ public class JdbcLogStore implements LogStore {
 		this.jdbcTemplate.batchUpdate("""
 				INSERT INTO log(
 				    timestamp,
+				    observed_timestamp,
 				    severity,
 				    service_name,
 				    scope,
@@ -52,11 +53,11 @@ public class JdbcLogStore implements LogStore {
 				    attributes,
 				    resource_attributes_digest
 				)
-				VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 				""".trim(),
 				logs.stream()
-					.map(log -> new Object[] { Timestamp.from(log.timestamp()), log.severity(), log.serviceName(),
-							log.scope(), log.body(), log.traceId(), log.spanId(),
+					.map(log -> new Object[] { Timestamp.from(log.timestamp()), Timestamp.from(log.observedTimestamp()),
+							log.severity(), log.serviceName(), log.scope(), log.body(), log.traceId(), log.spanId(),
 							Json.stringify(this.objectMapper, log.attributes()), digest })
 					.toList());
 	}
