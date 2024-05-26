@@ -80,7 +80,7 @@ public class Sqlite3FilterExpressionConverter extends AbstractFilterExpressionCo
 				.append("')");
 		}
 		else {
-			context.append(identifier);
+			context.append(toSnakeCase(identifier));
 		}
 	}
 
