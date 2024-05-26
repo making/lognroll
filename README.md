@@ -9,6 +9,22 @@ a simple log store
 * Compatible with both Protocol Buffers and JSON
 * Gzip compression supported
 * Stores log data in SQLite3
+* Built-in UI
+
+## Build and run
+
+Java 21+ is required.
+
+```
+./mvnw clean package -DskipTests
+```
+
+```
+java -jar target/lognroll-0.0.1-SNAPSHOT.jar
+```
+
+* OTLP/HTTP endpoint: http://localhost:4318
+* Default bearer token: `changeme` (you can change the token with `--lognroll.auth.token=verysecuretoken`)
 
 ## Send a example record
 
@@ -19,7 +35,7 @@ cat src/test/resources/logs.json | curl -H "Content-Type: application/json" -H "
 then, check the stored data
 
 ```
-$ curl -s http://localhost:4318/api/logs | jq .
+$ curl -s http://localhost:4318/api/logs -H "Authorization: Bearer changeme" | jq .
 [
   {
     "logId": 1,
@@ -47,4 +63,18 @@ $ curl -s http://localhost:4318/api/logs | jq .
     "resourceAttributes": {}
   }
 ]
+```
+
+Go to the web UI http://localhost:4318
+
+## Send from OTEL Collector
+
+```yaml
+exporters:
+  otlphttp/lognroll:
+    endpoint: http://localhost:4318
+    tls:
+      insecure: true
+    headers:
+      Authorization: Bearer changeme
 ```
