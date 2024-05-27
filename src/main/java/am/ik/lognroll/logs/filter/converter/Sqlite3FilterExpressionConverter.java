@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import am.ik.lognroll.logs.filter.Filter;
 
 /**
- * Converts {@link Filter.Expression} into SQLite3 metadata filter expression format.
+ * Converts {@link Filter.Expression} into SQLite3 attributes filter expression format.
  * (<a href="https://www.sqlite.org/json1.html">https://www.sqlite.org/json1.html</a>)
  *
  * @author Toshiaki Maki
