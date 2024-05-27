@@ -12,6 +12,8 @@ a simple OTLP log store
 * Full-Text search (trigram)
 * Built-in UI
 
+> [!INFO] This is a hobby project designed to facilitate the verification of log ingestion with OTLP. It is not intended for use in environments where reliability or high performance is required.
+
 ## Build and run
 
 Java 21+ is required.
