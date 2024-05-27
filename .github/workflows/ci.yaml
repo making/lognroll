@@ -76,3 +76,49 @@ jobs:
         set -e
         docker push ghcr.io/${GITHUB_REPOSITORY}:jvm
         docker push ghcr.io/${GITHUB_REPOSITORY}:native
+    - name: Install Fly
+      if: github.ref == 'refs/heads/main'
+      uses: superfly/flyctl-actions/setup-flyctl@master
+    - name: Deploy to Fly
+      if: github.ref == 'refs/heads/main'
+      run: |
+        cat <<'EOF' > fly.toml
+        [build]
+        image = "ghcr.io/making/lognroll:native"
+        
+        [[services]]
+        internal_port = 8080
+        protocol = "tcp"
+        
+        [[services.ports]]
+        handlers = ["http"]
+        port = "80"
+        
+        [[services.ports]]
+        handlers = ["tls", "http"]
+        port = "443"
+        
+        [[services.http_checks]]
+        port = 8080
+        interval = 5000
+        grace_period = "5s"
+        method = "get"
+        path = "/actuator/health"
+        protocol = "http"
+        timeout = 5000
+        
+        [metrics]
+        port = 8080
+        path = "/actuator/prometheus"
+        
+        [mounts]
+        source="lognroll_data"
+        destination="/var/lognroll"
+        
+        [env]
+        "spring.application.name" = "${FLY_APP_NAME}"
+        "server.port" = "8080"
+        "lognroll.db.path" = "/var/lognroll/lognroll.db"
+        EOF
+        flyctl apps create --name lognroll --machines || true
+        flyctl deploy -a lognroll --ha=false
