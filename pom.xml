@@ -231,6 +231,12 @@
 						<spring.boot.version>${project.parent.version}</spring.boot.version>
 						<spring.framework.version>${spring-framework.version}</spring.framework.version>
 					</additionalProperties>
+					<image>
+						<env>
+							<BP_OCI_SOURCE>${env.GITHUB_REF_NAME}@sha1:${env.GITHUB_SHA}</BP_OCI_SOURCE>
+							<BP_OCI_REVISION>${env.GITHUB_REF_NAME}@sha1:${env.GITHUB_SHA}</BP_OCI_REVISION>
+						</env>
+					</image>
 				</configuration>
 			</plugin>
 			<plugin>
