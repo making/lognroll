@@ -4,7 +4,6 @@ a simple OTLP log store
 
 ![logo](./logo.png)
 
-* Lightweight
 * Supports OTLP/HTTP (No Grpc)
 * Compatible with both Protocol Buffers and JSON
 * Gzip compression supported
@@ -31,6 +30,12 @@ or
 
 * OTLP/HTTP endpoint: http://localhost:4318/v1/logs
 * Default bearer token: `changeme` (you can change the token with `--lognroll.auth.token=verysecuretoken`)
+
+## Run with Docker
+
+```
+docker run --rm -p 4318:4318 -v ./data:/data -e LOGNROLL_DB_PATH=/data/lognroll.db ghcr.io/making/lognroll:jvm
+```
 
 ## Send a example record
 
