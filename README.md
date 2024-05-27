@@ -14,6 +14,25 @@ a simple OTLP log store
 > [!NOTE]
 > This is a hobby project designed to facilitate the verification of log ingestion with OTLP. It is not intended for use in environments where reliability or high performance is required.
 
+## Run with Docker
+
+Run with the native image version. It starts up quickly (usually in less than a second), but it does not currently work on Arm environments such as Apple Silicon.
+
+```
+mkdir -p data
+docker run --rm -p 4318:4318 -v ./data:/data -e LOGNROLL_DB_PATH=/data/lognroll.db ghcr.io/making/lognroll:native
+```
+
+Or the JVM version will work in any environment.
+
+```
+mkdir -p data
+docker run --rm -p 4318:4318 -v ./data:/data -e LOGNROLL_DB_PATH=/data/lognroll.db ghcr.io/making/lognroll:jvm
+```
+
+* OTLP/HTTP endpoint: http://localhost:4318/v1/logs
+* Default bearer token: `changeme` (you can change the token with `--lognroll.auth.token=verysecuretoken`)
+
 ## Build and run
 
 Java 21+ is required.
@@ -29,13 +48,10 @@ or
 ./mvnw spring-boot:run
 ```
 
-* OTLP/HTTP endpoint: http://localhost:4318/v1/logs
-* Default bearer token: `changeme` (you can change the token with `--lognroll.auth.token=verysecuretoken`)
-
-## Run with Docker
+For Native Image Build, run the following command. The native image (`./target/lognroll`) created here should work on the environment where it was built, including Arm.
 
 ```
-docker run --rm -p 4318:4318 -v ./data:/data -e LOGNROLL_DB_PATH=/data/lognroll.db ghcr.io/making/lognroll:jvm
+./mvnw -Pnative -DskipTests native:compile
 ```
 
 ## Send a example record
