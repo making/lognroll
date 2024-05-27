@@ -116,7 +116,7 @@ public class Sqlite3FilterExpressionConverter extends AbstractFilterExpressionCo
 			if (Character.isUpperCase(c)) {
 				snakeCase.append('_').append(Character.toLowerCase(c));
 			}
-			if (c == '.') {
+			else if (c == '.') {
 				snakeCase.append('_');
 			}
 			else {
