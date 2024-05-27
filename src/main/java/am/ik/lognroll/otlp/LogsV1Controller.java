@@ -4,6 +4,7 @@ import java.util.List;
 
 import am.ik.lognroll.logs.Log;
 import am.ik.lognroll.logs.LogStore;
+import am.ik.lognroll.logs.Logs;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.opentelemetry.proto.logs.v1.LogsData;
 
@@ -24,7 +25,7 @@ public class LogsV1Controller {
 	@PostMapping(path = "/v1/logs",
 			consumes = { MediaType.APPLICATION_PROTOBUF_VALUE, MediaType.APPLICATION_JSON_VALUE })
 	public void logs(@RequestBody LogsData logs) throws InvalidProtocolBufferException {
-		List<Log> data = Log.from(logs);
+		List<Log> data = Logs.from(logs);
 		this.logStore.addAll(data);
 	}
 
