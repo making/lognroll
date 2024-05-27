@@ -8,7 +8,7 @@ a simple OTLP log store
 * Supports OTLP/HTTP (No Grpc)
 * Compatible with both Protocol Buffers and JSON
 * Gzip compression supported
-* Stores log data in SQLite3
+* Stores log data in SQLite
 * Full-Text search (trigram)
 * Built-in UI
 
@@ -18,10 +18,13 @@ Java 21+ is required.
 
 ```
 ./mvnw clean package -DskipTests
+java -jar target/lognroll-0.0.1-SNAPSHOT.jar
 ```
 
+or
+
 ```
-java -jar target/lognroll-0.0.1-SNAPSHOT.jar
+./mvnw spring-boot:run
 ```
 
 * OTLP/HTTP endpoint: http://localhost:4318/v1/logs
