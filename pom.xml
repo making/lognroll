@@ -218,11 +218,11 @@
 					<execution>
 						<id>process-aot</id>
 						<configuration>
-							<systemPropertyVariables>
-								<management.otlp.tracing.endpoint>
-									http://otel-collector.opentelemetry.svc.cluster.local:4318/v1/traces
-								</management.otlp.tracing.endpoint>
-							</systemPropertyVariables>
+							<!--							<systemPropertyVariables>-->
+							<!--								<management.otlp.tracing.endpoint>-->
+							<!--									http://otel-collector.opentelemetry.svc.cluster.local:4318/v1/traces-->
+							<!--								</management.otlp.tracing.endpoint>-->
+							<!--							</systemPropertyVariables>-->
 						</configuration>
 					</execution>
 				</executions>
