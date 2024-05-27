@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Target port to wait for
-TARGET_PORT=8080
+TARGET_PORT=4318
 # Timeout in seconds
 TIMEOUT=60
 # Start time
