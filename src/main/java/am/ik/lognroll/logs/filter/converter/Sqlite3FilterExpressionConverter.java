@@ -36,6 +36,16 @@ public class Sqlite3FilterExpressionConverter extends AbstractFilterExpressionCo
 		this.convertOperand(expression.right(), context);
 	}
 
+	@Override
+	protected void doStartValueRange(Filter.Value listValue, StringBuilder context) {
+		context.append("(");
+	}
+
+	@Override
+	protected void doEndValueRange(Filter.Value listValue, StringBuilder context) {
+		context.append(")");
+	}
+
 	private String getOperationSymbol(Filter.Expression exp) {
 		switch (exp.type()) {
 			case AND:

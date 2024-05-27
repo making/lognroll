@@ -53,7 +53,7 @@ public class Sqlite3FilterExpressionConverterTests {
 		// genre in ["comedy", "documentary", "drama"]
 		String vectorExpr = converter.convertExpression(new Filter.Expression(Filter.ExpressionType.IN,
 				new Filter.Key("genre"), new Filter.Value(List.of("comedy", "documentary", "drama"))));
-		assertThat(vectorExpr).isEqualTo("genre IN [\"comedy\",\"documentary\",\"drama\"]");
+		assertThat(vectorExpr).isEqualTo("genre IN (\"comedy\",\"documentary\",\"drama\")");
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class Sqlite3FilterExpressionConverterTests {
 							new Filter.Value("BG")))),
 					new Filter.Expression(Filter.ExpressionType.NIN, new Filter.Key("city"),
 							new Filter.Value(List.of("Sofia", "Plovdiv")))));
-		assertThat(vectorExpr).isEqualTo("(year >= 2020 OR country == \"BG\") AND city NIN [\"Sofia\",\"Plovdiv\"]");
+		assertThat(vectorExpr).isEqualTo("(year >= 2020 OR country == \"BG\") AND city NIN (\"Sofia\",\"Plovdiv\")");
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class Sqlite3FilterExpressionConverterTests {
 					new Filter.Expression(Filter.ExpressionType.IN, new Filter.Key("country"),
 							new Filter.Value(List.of("BG", "NL", "US")))));
 
-		assertThat(vectorExpr).isEqualTo("is_open == true AND year >= 2020 AND country IN [\"BG\",\"NL\",\"US\"]");
+		assertThat(vectorExpr).isEqualTo("is_open == true AND year >= 2020 AND country IN (\"BG\",\"NL\",\"US\")");
 	}
 
 	@Test
