@@ -50,7 +50,7 @@ jobs:
       run: |
         set -e
         ./mvnw -V --no-transfer-progress spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=ghcr.io/${GITHUB_REPOSITORY}:jvm
-    - name: Build Docker Image (JVM)
+    - name: Docker Push
       if: github.ref == 'refs/heads/main'
       run: |
         set -e
