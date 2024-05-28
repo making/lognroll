@@ -2,7 +2,9 @@ package am.ik.lognroll.logs.jdbc;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import am.ik.lognroll.logs.Log;
 import am.ik.lognroll.logs.LogStore;
@@ -32,8 +34,12 @@ public class JdbcLogStore implements LogStore {
 		if (CollectionUtils.isEmpty(logs)) {
 			return;
 		}
+		Map<Long, List<Log>> logsMap = logs.stream().collect(Collectors.groupingBy(Log::resourceAttributesDigest));
+		logsMap.forEach(this::addAllByDigest);
+	}
+
+	private void addAllByDigest(long digest, List<Log> logs) {
 		Log firstLog = logs.getFirst();
-		long digest = firstLog.resourceAttributesDigest();
 		int count = Objects.requireNonNull(this.jdbcTemplate
 			.queryForObject("SELECT COUNT(digest) FROM resource_attributes WHERE digest = ?", Integer.class, digest));
 		if (count == 0) {
