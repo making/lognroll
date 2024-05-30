@@ -12,7 +12,8 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "lognroll.db.path=/tmp/lognroll-test.db" })
+		properties = { "lognroll.db.path=/tmp/lognroll-test.db", "logging.logback.ecs-encoder.enabled=false",
+				"spring.output.ansi.enabled=always" })
 public abstract class IntegrationTestBase {
 
 	@Autowired

@@ -108,7 +108,10 @@ class LogsV1ControllerTest extends IntegrationTestBase {
 		assertThat(content).extractingJsonPathNumberValue("$.length()").isEqualTo(1);
 		assertThat(content).extractingJsonPathNumberValue("$[0].logId").isNotNull();
 		assertThat(content).extractingJsonPathStringValue("$[0].timestamp").isEqualTo("2018-12-13T14:51:00.300Z");
-		assertThat(content).extractingJsonPathStringValue("$[0].severity").isEqualTo("Information");
+		assertThat(content).extractingJsonPathStringValue("$[0].observedTimestamp")
+			.isEqualTo("2018-12-13T14:51:00.300Z");
+		assertThat(content).extractingJsonPathStringValue("$[0].severityText").isEqualTo("Information");
+		assertThat(content).extractingJsonPathNumberValue("$[0].severityNumber").isEqualTo(10);
 		assertThat(content).extractingJsonPathStringValue("$[0].serviceName").isEqualTo("my.service");
 		assertThat(content).extractingJsonPathStringValue("$[0].scope").isEqualTo("my.library");
 		assertThat(content).extractingJsonPathStringValue("$[0].body").isEqualTo("Example log record");

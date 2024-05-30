@@ -55,10 +55,12 @@ public class Logs {
 					LogRecord logRecord = scopeLogs.getLogRecords(k);
 					logBuilder.timestamp(Instant.EPOCH.plusNanos(logRecord.getTimeUnixNano()));
 					logBuilder.observedTimestamp(Instant.EPOCH.plusNanos(logRecord.getObservedTimeUnixNano()));
-					logBuilder.severity(logRecord.getSeverityText());
+					logBuilder.severityText(logRecord.getSeverityText());
+					logBuilder.severityNumber(logRecord.getSeverityNumberValue());
 					logBuilder.body(anyToObject(logRecord.getBody()).toString() /* TODO */);
 					logBuilder.traceId(HexFormat.of().formatHex(logRecord.getTraceId().toByteArray()));
 					logBuilder.spanId(HexFormat.of().formatHex(logRecord.getSpanId().toByteArray()));
+					logBuilder.traceFlags(logRecord.getFlags());
 					if (logRecord.getAttributesCount() > 0) {
 						logRecord.getAttributesList()
 							.forEach(

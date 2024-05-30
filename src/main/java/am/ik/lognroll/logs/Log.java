@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.jilt.Builder;
 
 @Builder
-public record Log(Long logId, Instant timestamp, Instant observedTimestamp, String severity, String serviceName,
-		String scope, String body, String traceId, String spanId, Map<String, Object> attributes,
-		Map<String, Object> resourceAttributes) {
+public record Log(Long logId, Instant timestamp, Instant observedTimestamp, String severityText, Integer severityNumber,
+		String serviceName, String scope, String body, String traceId, String spanId, Integer traceFlags,
+		Map<String, Object> attributes, Map<String, Object> resourceAttributes) {
 
 	@JsonIgnore
 	public long resourceAttributesDigest() {

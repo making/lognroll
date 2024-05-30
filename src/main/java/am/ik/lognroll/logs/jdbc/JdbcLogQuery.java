@@ -37,12 +37,14 @@ public class JdbcLogQuery implements LogQuery {
 				SELECT log.log_id,
 				       log.timestamp,
 				       log.observed_timestamp,
-				       log.severity,
+				       log.severity_text,
+				       log.severity_number,
 				       log.service_name,
 				       log.scope,
 				       log.body,
 				       log.trace_id,
 				       log.span_id,
+				       log.trace_flags,
 				       log.attributes,
 				       resource_attributes.resource_attributes
 				""");
@@ -108,12 +110,14 @@ public class JdbcLogQuery implements LogQuery {
 				.logId(rs.getLong("log_id"))
 				.timestamp(rs.getTimestamp("timestamp").toInstant())
 				.observedTimestamp(rs.getTimestamp("observed_timestamp").toInstant())
-				.severity(rs.getString("severity"))
+				.severityText(rs.getString("severity_text"))
+				.severityNumber(rs.getInt("severity_number"))
 				.serviceName(rs.getString("service_name"))
 				.scope(rs.getString("scope"))
 				.body(rs.getString("body"))
 				.traceId(rs.getString("trace_id"))
 				.spanId(rs.getString("span_id"))
+				.traceFlags(rs.getInt("trace_flags"))
 				.attributes(Json.parse(this.objectMapper, rs.getString("attributes")))
 				.resourceAttributes(Json.parse(this.objectMapper, rs.getString("resource_attributes")))
 				.build()) //

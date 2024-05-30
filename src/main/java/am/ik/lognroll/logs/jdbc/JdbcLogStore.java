@@ -50,22 +50,23 @@ public class JdbcLogStore implements LogStore {
 				INSERT INTO log(
 				    timestamp,
 				    observed_timestamp,
-				    severity,
+				    severity_text,
+				    severity_number,
 				    service_name,
 				    scope,
 				    body,
 				    trace_id,
 				    span_id,
+				    trace_flags,
 				    attributes,
 				    resource_attributes_digest
 				)
-				VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-				""".trim(),
-				logs.stream()
-					.map(log -> new Object[] { Timestamp.from(log.timestamp()), Timestamp.from(log.observedTimestamp()),
-							log.severity(), log.serviceName(), log.scope(), log.body(), log.traceId(), log.spanId(),
-							Json.stringify(this.objectMapper, log.attributes()), digest })
-					.toList());
+				VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				""".trim(), logs.stream()
+			.map(log -> new Object[] { Timestamp.from(log.timestamp()), Timestamp.from(log.observedTimestamp()),
+					log.severityText(), log.severityNumber(), log.serviceName(), log.scope(), log.body(), log.traceId(),
+					log.spanId(), log.traceFlags(), Json.stringify(this.objectMapper, log.attributes()), digest })
+			.toList());
 	}
 
 	@Override

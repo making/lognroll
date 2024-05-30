@@ -46,7 +46,8 @@ interface Log {
     logId: number;
     timestamp: string;
     observedTimestamp: string;
-    severity?: string;
+    severityText?: string;
+    severityNumber?: number;
     serviceName?: string;
     scope?: string;
     body?: string;
@@ -66,6 +67,8 @@ const LogViewer: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [jsonToTable, setJsonToTable] = useState<boolean>(false);
     const [useLocalTimezone, setUseLocalTimezone] = useState<boolean>(true);
+    const [useOccurredTimestamp, setuseOccurredTimestamp] = useState<boolean>(true);
+    const [useSeverityText, setUseSeverityText] = useState<boolean>(true);
     const [showLoadMore, setShowLoadMore] = useState<boolean>(false);
 
     const fetchLogs = async () => {
@@ -129,7 +132,7 @@ const LogViewer: React.FC = () => {
                    disabled={isLoading}
                    style={{width: '200px'}}
             />&nbsp;
-            <input type="text" placeholder={`Filter (e.g. severity=='ERROR', attributes["response_code"]>=400)`}
+            <input type="text" placeholder={`Filter (e.g. severityText=='ERROR', attributes["response_code"]>=400)`}
                    onChange={(e: ChangeEvent<HTMLInputElement>) => setFilter(e.target.value)}
                    onKeyDown={handleKeyDown}
                    disabled={isLoading}
@@ -157,22 +160,53 @@ const LogViewer: React.FC = () => {
             /></label>&nbsp;
             <br/>
             <label>
+                to table:&nbsp;
                 <input
                     type="checkbox"
                     checked={jsonToTable}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setJsonToTable(e.target.checked)}
                     disabled={isLoading}
                 />
-                to table
             </label>&nbsp;
             <label>
+                use local timezone:&nbsp;
                 <input
                     type="checkbox"
                     checked={useLocalTimezone}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setUseLocalTimezone(e.target.checked)}
                     disabled={isLoading}
                 />
-                use local timezone
+            </label>
+            <br/>
+            timestamp:&nbsp;
+            <label>
+                occurred<input name="timestamp"
+                               type="radio"
+                               checked={useOccurredTimestamp}
+                               onChange={(e: ChangeEvent<HTMLInputElement>) => setuseOccurredTimestamp(e.target.checked)}
+                               disabled={isLoading}/>
+            </label>
+            <label>
+                observed<input name="timestamp"
+                               type="radio"
+                               checked={!useOccurredTimestamp}
+                               onChange={(e: ChangeEvent<HTMLInputElement>) => setuseOccurredTimestamp(!e.target.checked)}
+                               disabled={isLoading}/>
+            </label>&nbsp;
+            severity:&nbsp;
+            <label>
+                text<input name="severity"
+                           type="radio"
+                           checked={useSeverityText}
+                           onChange={(e: ChangeEvent<HTMLInputElement>) => setUseSeverityText(e.target.checked)}
+                           disabled={isLoading}/>
+            </label>
+            <label>
+                number<input name="severity"
+                             type="radio"
+                             checked={!useSeverityText}
+                             onChange={(e: ChangeEvent<HTMLInputElement>) => setUseSeverityText(!e.target.checked)}
+                             disabled={isLoading}/>
             </label>&nbsp;
             <button onClick={fetchLogs}
                     disabled={isLoading}
@@ -183,7 +217,6 @@ const LogViewer: React.FC = () => {
                 <thead>
                 <tr>
                     <th>timestamp</th>
-                    <th>observed_timestamp</th>
                     <th>severity</th>
                     <th>service_name</th>
                     <th>scope</th>
@@ -195,31 +228,33 @@ const LogViewer: React.FC = () => {
                 </tr>
                 </thead>
                 <tbody>
-                {logs.map(log => <tr key={log.logId}>
-                    <td>{useLocalTimezone ? convertUtcToLocal(log.timestamp) : log.timestamp}</td>
-                    <td>{useLocalTimezone ? convertUtcToLocal(log.observedTimestamp) : log.observedTimestamp}</td>
-                    <td>{log.severity}</td>
-                    <td>{log.serviceName}</td>
-                    <td>{log.scope}</td>
-                    <td>{log.body && shouldJsonToTable(log) ? <JSONToHTMLTable data={JSON.parse(log.body)}
-                                                                               tableClassName="table"/> : (shouldLogfmtToTable(log) ?
-                        <JSONToHTMLTable data={logfmt.parse(log.body)}
-                                         tableClassName="table"/> : log.body)}</td>
-                    <td>{log.traceId}</td>
-                    <td>{log.spanId}</td>
-                    <td>
-                        {jsonToTable ? <JSONToHTMLTable
-                            data={log.attributes || []}
-                            tableClassName="table"
-                        /> : logfmt.stringify(log.attributes)}
-                    </td>
-                    <td>
-                        {jsonToTable ? <JSONToHTMLTable
-                            data={log.resourceAttributes || []}
-                            tableClassName="table"
-                        /> : logfmt.stringify(log.resourceAttributes)}
-                    </td>
-                </tr>)}
+                {logs.map(log => {
+                    const timestamp = useOccurredTimestamp ? log.timestamp : log.observedTimestamp;
+                    return <tr key={log.logId}>
+                        <td>{useLocalTimezone ? convertUtcToLocal(timestamp) : timestamp}</td>
+                        <td>{useSeverityText ? log.severityText : log.severityNumber}</td>
+                        <td>{log.serviceName}</td>
+                        <td>{log.scope}</td>
+                        <td>{log.body && shouldJsonToTable(log) ? <JSONToHTMLTable data={JSON.parse(log.body)}
+                                                                                   tableClassName="table"/> : (shouldLogfmtToTable(log) ?
+                            <JSONToHTMLTable data={logfmt.parse(log.body)}
+                                             tableClassName="table"/> : log.body)}</td>
+                        <td>{log.traceId}</td>
+                        <td>{log.spanId}</td>
+                        <td>
+                            {jsonToTable ? <JSONToHTMLTable
+                                data={log.attributes || []}
+                                tableClassName="table"
+                            /> : logfmt.stringify(log.attributes)}
+                        </td>
+                        <td>
+                            {jsonToTable ? <JSONToHTMLTable
+                                data={log.resourceAttributes || []}
+                                tableClassName="table"
+                            /> : logfmt.stringify(log.resourceAttributes)}
+                        </td>
+                    </tr>;
+                })}
                 </tbody>
             </table>
             {showLoadMore && <button
