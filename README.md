@@ -69,12 +69,14 @@ $ curl -s http://localhost:4318/api/logs -H "Authorization: Bearer changeme" | j
     "logId": 1,
     "timestamp": "2018-12-13T14:51:00.300Z",
     "observedTimestamp": "2018-12-13T14:51:00.300Z",
-    "severity": "Information",
+    "severityText": "Information",
+    "severityNumber": 10,
     "serviceName": "my.service",
     "scope": "my.library",
     "body": "Example log record",
     "traceId": "e41f0414517bf7cd37f35d370f6ebd07adf7f35dc50bad02",
     "spanId": "104135f41ec40b70b5075ef8",
+    "traceFlags": 0,
     "attributes": {
       "int.attribute": 10,
       "array.attribute": [
@@ -96,7 +98,7 @@ $ curl -s http://localhost:4318/api/logs -H "Authorization: Bearer changeme" | j
 
 Go to the web UI http://localhost:4318 (username: empty, password: `changeme` same as token)
 
-<img width="1024" alt="image" src="https://github.com/making/lognroll/assets/106908/d0d11eea-cc13-4eb5-aa1f-119403157389">
+<img width="1024" alt="image" src="https://github.com/making/lognroll/assets/106908/03f41383-4c24-4367-81ba-0dcbe61a2e71">
 
 ## Send from OTEL Collector
 
