@@ -1,6 +1,7 @@
 package am.ik.lognroll;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,12 +13,14 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "lognroll.db.path=/tmp/lognroll-test.db", "logging.logback.ecs-encoder.enabled=false",
-				"spring.output.ansi.enabled=always" })
+		properties = { "lognroll.db.path=/tmp/lognroll-test.db", "logging.logback.ecs-encoder.enabled=false" })
 public abstract class IntegrationTestBase {
 
 	@Autowired
 	protected RestClient.Builder restClientBuilder;
+
+	@Autowired
+	LogbookClientHttpRequestInterceptor logbookClientHttpRequestInterceptor;
 
 	protected RestClient restClient;
 
@@ -36,6 +39,7 @@ public abstract class IntegrationTestBase {
 
 					}
 				})
+				.requestInterceptor(this.logbookClientHttpRequestInterceptor)
 				.build();
 		}
 	}
