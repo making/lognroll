@@ -14,6 +14,7 @@ import io.opentelemetry.proto.logs.v1.LogsData;
 import io.opentelemetry.proto.logs.v1.ResourceLogs;
 import io.opentelemetry.proto.logs.v1.ScopeLogs;
 import io.opentelemetry.proto.resource.v1.Resource;
+import jakarta.annotation.Nullable;
 import org.eclipse.jetty.http.pathmap.PathSpecSet;
 import org.eclipse.jetty.util.AsciiLowerCaseSet;
 import org.eclipse.jetty.util.ClassMatcher;
@@ -30,7 +31,7 @@ public class NativeHints {
 	public static class RuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(org.springframework.aot.hint.RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(org.springframework.aot.hint.RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			try {
 				hints.reflection()
 					.registerConstructor(ClassMatcher.ByPackage.class.getConstructor(), ExecutableMode.INVOKE)

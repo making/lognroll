@@ -23,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import am.ik.lognroll.logs.filter.antlr4.FiltersBaseVisitor;
+import jakarta.annotation.Nullable;
 import org.antlr.v4.runtime.ANTLRErrorStrategy;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -167,7 +168,7 @@ public class FilterExpressionTextParser {
 
 	public static class FilterExpressionParseException extends RuntimeException {
 
-		public FilterExpressionParseException(String message, Throwable cause) {
+		public FilterExpressionParseException(String message, @Nullable Throwable cause) {
 			super(message, cause);
 		}
 
