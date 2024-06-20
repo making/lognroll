@@ -88,7 +88,7 @@ interface Message {
 
 const LogViewer: React.FC = () => {
     const [logs, setLogs] = useState<Log[]>([]);
-    const [count, setCount] = useState<number>();
+    const [count, setCount] = useState<number|string>();
     const [query, setQuery] = useState<string>('');
     const [filter, setFilter] = useState<string>('');
     const [size, setSize] = useState<number>(30);
@@ -111,26 +111,11 @@ const LogViewer: React.FC = () => {
         setMessage(null);
         try {
             const logsResponse = await fetch(logsUrl);
-            const countResponse = await fetch(countUrl);
             if (logsResponse.status === 200) {
                 const logsData: LogsResponse = await logsResponse.json();
                 setLogs(logsData.logs);
+                setCount('Counting...');
                 setShowLoadMore(logsData.logs.length >= size);
-                if (countResponse.status === 200) {
-                    const countData: CountResponse = await countResponse.json();
-                    setCount(countData.totalCount);
-                } else {
-                    const data: {
-                        type: string,
-                        title: string,
-                        status: number,
-                        detail: string
-                    } = await countResponse.json();
-                    setMessage({
-                        status: 'error',
-                        text: data.detail
-                    });
-                }
             } else {
                 const data: { type: string, title: string, status: number, detail: string } = await logsResponse.json();
                 setMessage({
@@ -142,6 +127,26 @@ const LogViewer: React.FC = () => {
             console.error('Error fetching logs:', error);
         } finally {
             setIsLoading(false);
+        }
+        try {
+            const countResponse = await fetch(countUrl);
+            if (countResponse.status === 200) {
+                const countData: CountResponse = await countResponse.json();
+                setCount(countData.totalCount);
+            } else {
+                const data: {
+                    type: string,
+                    title: string,
+                    status: number,
+                    detail: string
+                } = await countResponse.json();
+                setMessage({
+                    status: 'error',
+                    text: data.detail
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching logs:', error);
         }
     };
 
