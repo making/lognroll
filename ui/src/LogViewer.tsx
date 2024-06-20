@@ -67,8 +67,10 @@ const LogViewer: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [jsonToTable, setJsonToTable] = useState<boolean>(false);
     const [useLocalTimezone, setUseLocalTimezone] = useState<boolean>(true);
-    const [useOccurredTimestamp, setuseOccurredTimestamp] = useState<boolean>(true);
+    const [useOccurredTimestamp, setuseOccurredTimestamp] = useState<boolean>(false);
+    const [timestampLabel, setTimestampLabel] = useState<'observed_timestamp' | 'timestamp'>('observed_timestamp');
     const [useSeverityText, setUseSeverityText] = useState<boolean>(true);
+    const [severityLabel, setSeverityLabel] = useState<'severity_text' | 'severity_number'>('severity_text');
     const [showLoadMore, setShowLoadMore] = useState<boolean>(false);
 
     const fetchLogs = async () => {
@@ -183,14 +185,20 @@ const LogViewer: React.FC = () => {
                 occurred<input name="timestamp"
                                type="radio"
                                checked={useOccurredTimestamp}
-                               onChange={(e: ChangeEvent<HTMLInputElement>) => setuseOccurredTimestamp(e.target.checked)}
+                               onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                   setuseOccurredTimestamp(e.target.checked);
+                                   setTimestampLabel('timestamp');
+                               }}
                                disabled={isLoading}/>
             </label>
             <label>
                 observed<input name="timestamp"
                                type="radio"
                                checked={!useOccurredTimestamp}
-                               onChange={(e: ChangeEvent<HTMLInputElement>) => setuseOccurredTimestamp(!e.target.checked)}
+                               onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                   setuseOccurredTimestamp(!e.target.checked);
+                                   setTimestampLabel('observed_timestamp');
+                               }}
                                disabled={isLoading}/>
             </label>&nbsp;
             severity:&nbsp;
@@ -198,14 +206,20 @@ const LogViewer: React.FC = () => {
                 text<input name="severity"
                            type="radio"
                            checked={useSeverityText}
-                           onChange={(e: ChangeEvent<HTMLInputElement>) => setUseSeverityText(e.target.checked)}
+                           onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                               setUseSeverityText(e.target.checked);
+                               setSeverityLabel('severity_text');
+                           }}
                            disabled={isLoading}/>
             </label>
             <label>
                 number<input name="severity"
                              type="radio"
                              checked={!useSeverityText}
-                             onChange={(e: ChangeEvent<HTMLInputElement>) => setUseSeverityText(!e.target.checked)}
+                             onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                 setUseSeverityText(!e.target.checked);
+                                 setSeverityLabel('severity_number');
+                             }}
                              disabled={isLoading}/>
             </label>&nbsp;
             <button onClick={fetchLogs}
@@ -216,8 +230,8 @@ const LogViewer: React.FC = () => {
             <table className="table">
                 <thead>
                 <tr>
-                    <th>timestamp</th>
-                    <th>severity</th>
+                    <th>{timestampLabel}</th>
+                    <th>{severityLabel}</th>
                     <th>service_name</th>
                     <th>scope</th>
                     <th>body</th>
