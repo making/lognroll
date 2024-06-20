@@ -99,7 +99,7 @@ public class JdbcLogQuery implements LogQuery {
 				.append(System.lineSeparator());
 		}
 		sql.append("""
-				ORDER BY timestamp DESC, observed_timestamp DESC
+				ORDER BY observed_timestamp DESC, timestamp DESC
 				""");
 		if (request.pageRequest().pageSize() > 0) {
 			sql.append("LIMIT %d".formatted(request.pageRequest().pageSize()));
