@@ -162,44 +162,46 @@ const LogViewer: React.FC = () => {
             /></label>&nbsp;
             <br/>
             <label>
-                to table:&nbsp;
                 <input
                     type="checkbox"
                     checked={jsonToTable}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setJsonToTable(e.target.checked)}
                     disabled={isLoading}
                 />
+                to table
             </label>&nbsp;
             <label>
-                use local timezone:&nbsp;
                 <input
                     type="checkbox"
                     checked={useLocalTimezone}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setUseLocalTimezone(e.target.checked)}
                     disabled={isLoading}
                 />
+                use local timezone
             </label>
             <br/>
             timestamp:&nbsp;
             <label>
-                occurred<input name="timestamp"
-                               type="radio"
-                               checked={useOccurredTimestamp}
-                               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                   setuseOccurredTimestamp(e.target.checked);
-                                   setTimestampLabel('timestamp');
-                               }}
-                               disabled={isLoading}/>
+                <input name="timestamp"
+                       type="radio"
+                       checked={useOccurredTimestamp}
+                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                           setuseOccurredTimestamp(e.target.checked);
+                           setTimestampLabel('timestamp');
+                       }}
+                       disabled={isLoading}/>
+                occurred
             </label>
             <label>
-                observed<input name="timestamp"
-                               type="radio"
-                               checked={!useOccurredTimestamp}
-                               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                                   setuseOccurredTimestamp(!e.target.checked);
-                                   setTimestampLabel('observed_timestamp');
-                               }}
-                               disabled={isLoading}/>
+                <input name="timestamp"
+                       type="radio"
+                       checked={!useOccurredTimestamp}
+                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                           setuseOccurredTimestamp(!e.target.checked);
+                           setTimestampLabel('observed_timestamp');
+                       }}
+                       disabled={isLoading}/>
+                observed
             </label>&nbsp;
             severity:&nbsp;
             <label>
