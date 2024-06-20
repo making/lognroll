@@ -6,6 +6,8 @@ import java.util.List;
 import am.ik.lognroll.logs.LogQuery.Cursor;
 import am.ik.lognroll.logs.filter.FilterExpressionTextParser;
 import am.ik.pagination.CursorPageRequest;
+import org.jilt.Builder;
+import org.jilt.BuilderStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteException;
@@ -19,6 +21,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import static am.ik.lognroll.logs.LogsResponseBuilder.logs;
+import static am.ik.lognroll.logs.LogsResponseBuilder.logsResponse;
+import static am.ik.lognroll.logs.LogsResponseBuilder.totalCount;
 
 @RestController
 public class QueryController {
@@ -37,7 +43,7 @@ public class QueryController {
 	}
 
 	@GetMapping(path = "/api/logs")
-	public List<Log> logs(@RequestParam(required = false) String query, CursorPageRequest<Cursor> pageRequest,
+	public LogsResponse showLogs(@RequestParam(required = false) String query, CursorPageRequest<Cursor> pageRequest,
 			@RequestParam(required = false) String filter, @RequestParam(required = false) Instant from,
 			@RequestParam(required = false) Instant to) {
 		SearchRequestBuilder searchRequest = SearchRequestBuilder.searchRequest()
@@ -56,7 +62,8 @@ public class QueryController {
 			}
 		}
 		try {
-			return this.logQuery.findLatestLogs(searchRequest.build());
+			LogQuery.SearchRequest request = searchRequest.build();
+			return logsResponse(logs(this.logQuery.findLatestLogs(request)), totalCount(this.logQuery.count(request)));
 		}
 		catch (UncategorizedSQLException e) {
 			if (e.getCause() instanceof SQLiteException) {
@@ -71,6 +78,10 @@ public class QueryController {
 		logger.info("Clear logs!!!");
 		this.logStore.clear();
 		return ResponseEntity.noContent().build();
+	}
+
+	@Builder(style = BuilderStyle.FUNCTIONAL)
+	public record LogsResponse(List<Log> logs, long totalCount) {
 	}
 
 }

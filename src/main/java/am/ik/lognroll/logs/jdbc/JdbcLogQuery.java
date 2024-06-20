@@ -12,6 +12,8 @@ import am.ik.lognroll.logs.filter.FilterExpressionConverter;
 import am.ik.lognroll.logs.filter.converter.Sqlite3FilterExpressionConverter;
 import am.ik.lognroll.util.Json;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jilt.Builder;
+import org.jilt.BuilderStyle;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
@@ -31,23 +33,8 @@ public class JdbcLogQuery implements LogQuery {
 		this.objectMapper = objectMapper;
 	}
 
-	@Override
-	public List<Log> findLatestLogs(SearchRequest request) {
-		StringBuilder sql = new StringBuilder("""
-				SELECT log.log_id,
-				       log.timestamp,
-				       log.observed_timestamp,
-				       log.severity_text,
-				       log.severity_number,
-				       log.service_name,
-				       log.scope,
-				       log.body,
-				       log.trace_id,
-				       log.span_id,
-				       log.trace_flags,
-				       log.attributes,
-				       resource_attributes.resource_attributes
-				""");
+	QueryAndParams buildQueryAndParams(SearchRequest request) {
+		StringBuilder sql = new StringBuilder();
 		Map<String, Object> params = new HashMap<>();
 		String query = request.query();
 		if (StringUtils.hasText(query)) {
@@ -98,6 +85,28 @@ public class JdbcLogQuery implements LogQuery {
 				.append(this.converter.convertExpression(request.filterExpression()))
 				.append(System.lineSeparator());
 		}
+		return new QueryAndParams(sql.toString(), params);
+	}
+
+	@Override
+	public List<Log> findLatestLogs(SearchRequest request) {
+		StringBuilder sql = new StringBuilder("""
+				SELECT log.log_id,
+				       log.timestamp,
+				       log.observed_timestamp,
+				       log.severity_text,
+				       log.severity_number,
+				       log.service_name,
+				       log.scope,
+				       log.body,
+				       log.trace_id,
+				       log.span_id,
+				       log.trace_flags,
+				       log.attributes,
+				       resource_attributes.resource_attributes
+				""");
+		QueryAndParams queryAndParams = buildQueryAndParams(request);
+		sql.append(queryAndParams.query());
 		sql.append("""
 				ORDER BY observed_timestamp DESC, timestamp DESC
 				""");
@@ -105,7 +114,7 @@ public class JdbcLogQuery implements LogQuery {
 			sql.append("LIMIT %d".formatted(request.pageRequest().pageSize()));
 		}
 		return this.jdbcClient.sql(sql.toString()) //
-			.params(params) //
+			.params(queryAndParams.params()) //
 			.query((rs, rowNum) -> LogBuilder.log()
 				.logId(rs.getLong("log_id"))
 				.timestamp(rs.getTimestamp("timestamp").toInstant())
@@ -122,6 +131,22 @@ public class JdbcLogQuery implements LogQuery {
 				.resourceAttributes(Json.parse(this.objectMapper, rs.getString("resource_attributes")))
 				.build()) //
 			.list();
+	}
+
+	@Override
+	public long count(SearchRequest request) {
+		StringBuilder sql = new StringBuilder("""
+				SELECT COUNT(log.log_id)
+				""");
+		QueryAndParams queryAndParams = buildQueryAndParams(request);
+		sql.append(queryAndParams.query());
+		return this.jdbcClient.sql(sql.toString()) //
+			.params(queryAndParams.params()) //
+			.query(Long.class)
+			.single();
+	}
+
+	private record QueryAndParams(String query, Map<String, Object> params) {
 	}
 
 }

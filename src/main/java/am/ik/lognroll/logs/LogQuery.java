@@ -11,6 +11,8 @@ public interface LogQuery {
 
 	List<Log> findLatestLogs(SearchRequest request);
 
+	long count(SearchRequest request);
+
 	@Builder
 	record SearchRequest(String query, CursorPageRequest<Cursor> pageRequest, Filter.Expression filterExpression,
 			Instant from, Instant to) {

@@ -43,6 +43,11 @@ function convertUtcToLocal(utcDateString: string): string {
     return date.toLocaleString();
 }
 
+interface LogsResponse {
+    logs: Log[],
+    totalCount: number
+}
+
 interface Log {
     logId: number;
     timestamp: string;
@@ -65,6 +70,7 @@ interface Message {
 
 const LogViewer: React.FC = () => {
     const [logs, setLogs] = useState<Log[]>([]);
+    const [count, setCount] = useState<number>();
     const [query, setQuery] = useState<string>('');
     const [filter, setFilter] = useState<string>('');
     const [size, setSize] = useState<number>(30);
@@ -87,9 +93,10 @@ const LogViewer: React.FC = () => {
         try {
             const response = await fetch(url);
             if (response.status === 200) {
-                const data: Log[] = await response.json();
-                setLogs(data);
-                setShowLoadMore(data.length >= size);
+                const data: LogsResponse = await response.json();
+                setLogs(data.logs);
+                setCount(data.totalCount);
+                setShowLoadMore(data.logs.length >= size);
             } else {
                 const data: { type: string, title: string, status: number, detail: string } = await response.json();
                 setMessage({
@@ -245,6 +252,7 @@ const LogViewer: React.FC = () => {
             >View Logs
             </button>
             {message && <MessageBox status={message.status}>{message.text}</MessageBox>}
+            {count && <p>Total Count: <strong>{count.toLocaleString()}</strong></p>}
             <table className="table">
                 <thead>
                 <tr>
