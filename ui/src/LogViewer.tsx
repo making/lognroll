@@ -132,7 +132,7 @@ const LogViewer: React.FC = () => {
                    disabled={isLoading}
                    style={{width: '200px'}}
             />&nbsp;
-            <input type="text" placeholder={`Filter (e.g. severityText=='ERROR', attributes["response_code"]>=400)`}
+            <input type="text" placeholder={`Filter (e.g. severityText=='ERROR', attributes["status"]>=400)`}
                    onChange={(e: ChangeEvent<HTMLInputElement>) => setFilter(e.target.value)}
                    onKeyDown={handleKeyDown}
                    disabled={isLoading}
