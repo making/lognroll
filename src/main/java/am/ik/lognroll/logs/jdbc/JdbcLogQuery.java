@@ -12,8 +12,6 @@ import am.ik.lognroll.logs.filter.FilterExpressionConverter;
 import am.ik.lognroll.logs.filter.converter.Sqlite3FilterExpressionConverter;
 import am.ik.lognroll.util.Json;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jilt.Builder;
-import org.jilt.BuilderStyle;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
@@ -56,11 +54,11 @@ public class JdbcLogQuery implements LogQuery {
 		Cursor cursor = request.pageRequest().cursor();
 		if (cursor != null) {
 			sql.append("""
-					AND timestamp <= :timestamp
-					AND observed_timestamp < :observed_timestamp
+					AND observed_timestamp <= :observed_timestamp
+					AND timestamp < :timestamp
 					""");
-			params.put("timestamp", Timestamp.from(cursor.timestamp()));
 			params.put("observed_timestamp", Timestamp.from(cursor.observedTimestamp()));
+			params.put("timestamp", Timestamp.from(cursor.timestamp()));
 		}
 		if (request.from() != null) {
 			sql.append("""
