@@ -8,7 +8,7 @@ import logfmt from 'logfmt';
 import {MessageBox, MessageStatus} from "./MessageBox.tsx";
 
 interface BuildUrlParams {
-    size: number;
+    size?: number;
     query: string;
     filter?: string;
     cursor?: string;
