@@ -7,6 +7,8 @@ import java.util.zip.GZIPOutputStream;
 
 import am.ik.lognroll.IntegrationTestBase;
 import am.ik.lognroll.logs.LogStore;
+import am.ik.lognroll.logs.QueryController;
+import am.ik.lognroll.logs.QueryController.CountResponse;
 import com.google.protobuf.util.JsonFormat;
 import io.opentelemetry.proto.logs.v1.LogsData;
 import org.junit.jupiter.api.BeforeEach;
@@ -99,13 +101,19 @@ class LogsV1ControllerTest extends IntegrationTestBase {
 	}
 
 	void assertData() {
+		CountResponse count = this.restClient.get()
+			.uri("/api/logs/count")
+			.header(HttpHeaders.AUTHORIZATION, "Bearer changeme")
+			.retrieve()
+			.body(CountResponse.class);
+		assertThat(count).isNotNull();
+		assertThat(count.totalCount()).isEqualTo(1);
 		String logs = this.restClient.get()
 			.uri("/api/logs")
 			.header(HttpHeaders.AUTHORIZATION, "Bearer changeme")
 			.retrieve()
 			.body(String.class);
 		JsonContent<Object> content = this.json.from(logs);
-		assertThat(content).extractingJsonPathNumberValue("$.totalCount").isEqualTo(1);
 		assertThat(content).extractingJsonPathNumberValue("$.logs.length()").isEqualTo(1);
 		assertThat(content).extractingJsonPathNumberValue("$.logs[0].logId").isNotNull();
 		assertThat(content).extractingJsonPathStringValue("$.logs[0].timestamp").isEqualTo("2018-12-13T14:51:00.300Z");

@@ -51,14 +51,16 @@ public class JdbcLogQuery implements LogQuery {
 		sql.append("""
 				WHERE 1 = 1
 				""");
-		Cursor cursor = request.pageRequest().cursor();
-		if (cursor != null) {
-			sql.append("""
-					AND observed_timestamp <= :observed_timestamp
-					AND timestamp < :timestamp
-					""");
-			params.put("observed_timestamp", Timestamp.from(cursor.observedTimestamp()));
-			params.put("timestamp", Timestamp.from(cursor.timestamp()));
+		if (request.pageRequest() != null) {
+			Cursor cursor = request.pageRequest().cursor();
+			if (cursor != null) {
+				sql.append("""
+						AND observed_timestamp <= :observed_timestamp
+						AND timestamp < :timestamp
+						""");
+				params.put("observed_timestamp", Timestamp.from(cursor.observedTimestamp()));
+				params.put("timestamp", Timestamp.from(cursor.timestamp()));
+			}
 		}
 		if (request.from() != null) {
 			sql.append("""
@@ -108,7 +110,7 @@ public class JdbcLogQuery implements LogQuery {
 		sql.append("""
 				ORDER BY observed_timestamp DESC, timestamp DESC
 				""");
-		if (request.pageRequest().pageSize() > 0) {
+		if (request.pageRequest() != null && request.pageRequest().pageSize() > 0) {
 			sql.append("LIMIT %d".formatted(request.pageRequest().pageSize()));
 		}
 		return this.jdbcClient.sql(sql.toString()) //

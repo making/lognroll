@@ -5,6 +5,7 @@ import java.util.List;
 
 import am.ik.lognroll.logs.filter.Filter;
 import am.ik.pagination.CursorPageRequest;
+import jakarta.annotation.Nullable;
 import org.jilt.Builder;
 
 public interface LogQuery {
@@ -14,8 +15,8 @@ public interface LogQuery {
 	long count(SearchRequest request);
 
 	@Builder
-	record SearchRequest(String query, CursorPageRequest<Cursor> pageRequest, Filter.Expression filterExpression,
-			Instant from, Instant to) {
+	record SearchRequest(String query, @Nullable CursorPageRequest<Cursor> pageRequest,
+			@Nullable Filter.Expression filterExpression, @Nullable Instant from, @Nullable Instant to) {
 
 	}
 

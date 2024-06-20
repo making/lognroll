@@ -16,13 +16,28 @@ interface BuildUrlParams {
     to?: string;
 }
 
-const buildUrl = ({size, query, filter, cursor, from, to}: BuildUrlParams): string => {
+const buildLogsUrl = ({size, query, filter, cursor, from, to}: BuildUrlParams): string => {
     let url = `/api/logs?size=${size}&query=${encodeURIComponent(query)}`;
     if (filter) {
         url += `&filter=${encodeURIComponent(filter)}`;
     }
     if (cursor) {
         url += `&cursor=${encodeURIComponent(cursor)}`;
+    }
+    if (from) {
+        url += `&from=${encodeURIComponent(convertToIsoUtc(from))}`;
+    }
+    if (to) {
+        url += `&to=${encodeURIComponent(convertToIsoUtc(to))}`;
+    }
+    return url;
+};
+
+
+const buildCountUrl = ({query, filter, from, to}: BuildUrlParams): string => {
+    let url = `/api/logs/count?query=${encodeURIComponent(query)}`;
+    if (filter) {
+        url += `&filter=${encodeURIComponent(filter)}`;
     }
     if (from) {
         url += `&from=${encodeURIComponent(convertToIsoUtc(from))}`;
@@ -44,7 +59,10 @@ function convertUtcToLocal(utcDateString: string): string {
 }
 
 interface LogsResponse {
-    logs: Log[],
+    logs: Log[]
+}
+
+interface CountResponse {
     totalCount?: number
 }
 
@@ -87,18 +105,34 @@ const LogViewer: React.FC = () => {
     const [message, setMessage] = useState<Message | null>(null);
 
     const fetchLogs = async () => {
-        const url = buildUrl({size, query, filter, from, to});
+        const logsUrl = buildLogsUrl({size, query, filter, from, to});
+        const countUrl = buildCountUrl({query, filter, from, to});
         setIsLoading(true);
         setMessage(null);
         try {
-            const response = await fetch(url);
-            if (response.status === 200) {
-                const data: LogsResponse = await response.json();
-                setLogs(data.logs);
-                setCount(data.totalCount);
-                setShowLoadMore(data.logs.length >= size);
+            const logsResponse = await fetch(logsUrl);
+            const countResponse = await fetch(countUrl);
+            if (logsResponse.status === 200) {
+                const logsData: LogsResponse = await logsResponse.json();
+                setLogs(logsData.logs);
+                setShowLoadMore(logsData.logs.length >= size);
+                if (countResponse.status === 200) {
+                    const countData: CountResponse = await countResponse.json();
+                    setCount(countData.totalCount);
+                } else {
+                    const data: {
+                        type: string,
+                        title: string,
+                        status: number,
+                        detail: string
+                    } = await countResponse.json();
+                    setMessage({
+                        status: 'error',
+                        text: data.detail
+                    });
+                }
             } else {
-                const data: { type: string, title: string, status: number, detail: string } = await response.json();
+                const data: { type: string, title: string, status: number, detail: string } = await logsResponse.json();
                 setMessage({
                     status: 'error',
                     text: data.detail
@@ -116,7 +150,7 @@ const LogViewer: React.FC = () => {
             return;
         }
         const lastLog = logs[logs.length - 1];
-        const url = buildUrl({
+        const url = buildLogsUrl({
             size,
             query,
             filter,

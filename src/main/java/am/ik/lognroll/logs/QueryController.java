@@ -6,9 +6,6 @@ import java.util.List;
 import am.ik.lognroll.logs.LogQuery.Cursor;
 import am.ik.lognroll.logs.filter.FilterExpressionTextParser;
 import am.ik.pagination.CursorPageRequest;
-import jakarta.annotation.Nullable;
-import org.jilt.Builder;
-import org.jilt.BuilderStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteException;
@@ -18,14 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import static am.ik.lognroll.logs.LogsResponseBuilder.Optional.totalCount;
-import static am.ik.lognroll.logs.LogsResponseBuilder.logs;
-import static am.ik.lognroll.logs.LogsResponseBuilder.logsResponse;
 
 @RestController
 public class QueryController {
@@ -55,29 +49,25 @@ public class QueryController {
 			searchRequest.query(query);
 		}
 		if (StringUtils.hasText(filter)) {
-			try {
-				searchRequest.filterExpression(this.parser.parse(filter));
-			}
-			catch (FilterExpressionTextParser.FilterExpressionParseException e) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-			}
+			searchRequest.filterExpression(this.parser.parse(filter));
 		}
-		try {
-			LogQuery.SearchRequest request = searchRequest.build();
-			List<Log> logs = this.logQuery.findLatestLogs(request);
-			if (pageRequest.cursor() == null) {
-				return logsResponse(logs(logs), totalCount(this.logQuery.count(request)));
-			}
-			else {
-				return logsResponse(logs(logs));
-			}
+		LogQuery.SearchRequest request = searchRequest.build();
+		return new LogsResponse(this.logQuery.findLatestLogs(request));
+	}
+
+	@GetMapping(path = "/api/logs/count")
+	public CountResponse showCount(@RequestParam(required = false) String query,
+			@RequestParam(required = false) String filter, @RequestParam(required = false) Instant from,
+			@RequestParam(required = false) Instant to) {
+		SearchRequestBuilder searchRequest = SearchRequestBuilder.searchRequest().from(from).to(to);
+		if (StringUtils.hasText(query)) {
+			searchRequest.query(query);
 		}
-		catch (UncategorizedSQLException e) {
-			if (e.getCause() instanceof SQLiteException) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage());
-			}
-			throw e;
+		if (StringUtils.hasText(filter)) {
+			searchRequest.filterExpression(this.parser.parse(filter));
 		}
+		LogQuery.SearchRequest request = searchRequest.build();
+		return new CountResponse(this.logQuery.count(request));
 	}
 
 	@DeleteMapping(path = "/api/logs")
@@ -87,8 +77,23 @@ public class QueryController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@Builder(style = BuilderStyle.FUNCTIONAL)
-	public record LogsResponse(List<Log> logs, @Nullable Long totalCount) {
+	@ExceptionHandler(FilterExpressionTextParser.FilterExpressionParseException.class)
+	public void handleFilterExpressionParseException(FilterExpressionTextParser.FilterExpressionParseException e) {
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+	}
+
+	@ExceptionHandler(UncategorizedSQLException.class)
+	public void handleUncategorizedSQLException(UncategorizedSQLException e) {
+		if (e.getCause() instanceof SQLiteException) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage(), e);
+		}
+		throw e;
+	}
+
+	public record LogsResponse(List<Log> logs) {
+	}
+
+	public record CountResponse(long totalCount) {
 	}
 
 }
