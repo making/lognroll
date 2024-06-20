@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,10 +48,23 @@ public class QueryController {
 			searchRequest.query(query);
 		}
 		if (StringUtils.hasText(filter)) {
-			searchRequest.filterExpression(this.parser.parse(filter));
+			try {
+				searchRequest.filterExpression(this.parser.parse(filter));
+			}
+			catch (FilterExpressionTextParser.FilterExpressionParseException e) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+			}
 		}
 		LogQuery.SearchRequest request = searchRequest.build();
-		return new LogsResponse(this.logQuery.findLatestLogs(request));
+		try {
+			return new LogsResponse(this.logQuery.findLatestLogs(request));
+		}
+		catch (UncategorizedSQLException e) {
+			if (e.getCause() instanceof SQLiteException) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage(), e);
+			}
+			throw e;
+		}
 	}
 
 	@GetMapping(path = "/api/logs/count")
@@ -64,10 +76,23 @@ public class QueryController {
 			searchRequest.query(query);
 		}
 		if (StringUtils.hasText(filter)) {
-			searchRequest.filterExpression(this.parser.parse(filter));
+			try {
+				searchRequest.filterExpression(this.parser.parse(filter));
+			}
+			catch (FilterExpressionTextParser.FilterExpressionParseException e) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+			}
 		}
 		LogQuery.SearchRequest request = searchRequest.build();
-		return new CountResponse(this.logQuery.count(request));
+		try {
+			return new CountResponse(this.logQuery.count(request));
+		}
+		catch (UncategorizedSQLException e) {
+			if (e.getCause() instanceof SQLiteException) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage(), e);
+			}
+			throw e;
+		}
 	}
 
 	@DeleteMapping(path = "/api/logs")
@@ -75,19 +100,6 @@ public class QueryController {
 		logger.info("Clear logs!!!");
 		this.logStore.clear();
 		return ResponseEntity.noContent().build();
-	}
-
-	@ExceptionHandler(FilterExpressionTextParser.FilterExpressionParseException.class)
-	public void handleFilterExpressionParseException(FilterExpressionTextParser.FilterExpressionParseException e) {
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-	}
-
-	@ExceptionHandler(UncategorizedSQLException.class)
-	public void handleUncategorizedSQLException(UncategorizedSQLException e) {
-		if (e.getCause() instanceof SQLiteException) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage(), e);
-		}
-		throw e;
 	}
 
 	public record LogsResponse(List<Log> logs) {
