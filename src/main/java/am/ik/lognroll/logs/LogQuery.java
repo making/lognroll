@@ -1,5 +1,6 @@
 package am.ik.lognroll.logs;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
@@ -13,6 +14,12 @@ public interface LogQuery {
 	List<Log> findLatestLogs(SearchRequest request);
 
 	long count(SearchRequest request);
+
+	List<Frequency> findFrequencies(SearchRequest request, Duration interval);
+
+	record Frequency(Instant date, long count) {
+
+	}
 
 	@Builder
 	record SearchRequest(String query, @Nullable CursorPageRequest<Cursor> pageRequest,

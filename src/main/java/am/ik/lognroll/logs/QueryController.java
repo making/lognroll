@@ -1,5 +1,6 @@
 package am.ik.lognroll.logs;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
@@ -100,6 +101,35 @@ public class QueryController {
 		}
 	}
 
+	@GetMapping(path = "/api/logs/frequencies")
+	public FrequenciesResponse showFrequencies(@RequestParam(required = false) String query,
+			@RequestParam(required = false) String filter, @RequestParam(required = false) Instant from,
+			@RequestParam(required = false) Instant to,
+			@RequestParam(required = false, defaultValue = "PT10M") Duration interval) {
+		SearchRequestBuilder searchRequest = SearchRequestBuilder.searchRequest().from(from).to(to);
+		if (StringUtils.hasText(query)) {
+			searchRequest.query(query);
+		}
+		if (StringUtils.hasText(filter)) {
+			try {
+				searchRequest.filterExpression(this.parser.parse(filter));
+			}
+			catch (FilterExpressionTextParser.FilterExpressionParseException e) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+			}
+		}
+		LogQuery.SearchRequest request = searchRequest.build();
+		try {
+			return new FrequenciesResponse(this.logQuery.findFrequencies(request, interval));
+		}
+		catch (UncategorizedSQLException e) {
+			if (e.getCause() instanceof SQLiteException) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage(), e);
+			}
+			throw e;
+		}
+	}
+
 	@GetMapping(path = "/api/logs/download")
 	public Resource downloadLogs() {
 		return this.dbFile;
@@ -116,6 +146,9 @@ public class QueryController {
 	}
 
 	public record CountResponse(long totalCount) {
+	}
+
+	public record FrequenciesResponse(List<LogQuery.Frequency> frequencies) {
 	}
 
 }

@@ -6,6 +6,7 @@ import {JSONToHTMLTable} from "@kevincobain2000/json-to-html-table";
 // @ts-expect-error TODO
 import logfmt from 'logfmt';
 import {MessageBox, MessageStatus} from "./MessageBox.tsx";
+import FrequenciesChart, {FrequencyData} from "./FrequenciesChart.tsx";
 
 interface BuildUrlParams {
     size?: number;
@@ -14,6 +15,7 @@ interface BuildUrlParams {
     cursor?: string;
     from?: string;
     to?: string;
+    interval?: number;
 }
 
 const buildLogsUrl = ({size, query, filter, cursor, from, to}: BuildUrlParams): string => {
@@ -34,8 +36,8 @@ const buildLogsUrl = ({size, query, filter, cursor, from, to}: BuildUrlParams): 
 };
 
 
-const buildCountUrl = ({query, filter, from, to}: BuildUrlParams): string => {
-    let url = `/api/logs/count?query=${encodeURIComponent(query)}`;
+const buildCountUrl = (path: string, {query, filter, from, to, interval}: BuildUrlParams): string => {
+    let url = `/api/logs${path}?query=${encodeURIComponent(query)}`;
     if (filter) {
         url += `&filter=${encodeURIComponent(filter)}`;
     }
@@ -44,6 +46,9 @@ const buildCountUrl = ({query, filter, from, to}: BuildUrlParams): string => {
     }
     if (to) {
         url += `&to=${encodeURIComponent(convertToIsoUtc(to))}`;
+    }
+    if (interval) {
+        url += `&interval=PT${interval}M`
     }
     return url;
 };
@@ -63,7 +68,11 @@ interface LogsResponse {
 }
 
 interface CountResponse {
-    totalCount?: number
+    totalCount: number
+}
+
+interface FrequenciesResponse {
+    frequencies: FrequencyData[]
 }
 
 interface Log {
@@ -96,13 +105,32 @@ const formatDate = (date: Date) => {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+const calcInterval = (from: string, to: string) => {
+    if (!from) {
+        return 60; // 1 hour
+    }
+    const startDate = new Date(from);
+    const endDate = to ? new Date(to) : new Date();
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays < 3) {
+        return 10;
+    } else if (diffDays < 4) {
+        return 20;
+    } else if (diffDays < 5) {
+        return 30
+    } else {
+        return 60;
+    }
+};
+
 const LogViewer: React.FC = () => {
     const [logs, setLogs] = useState<Log[]>([]);
     const [count, setCount] = useState<number | string>();
     const [query, setQuery] = useState<string>('');
     const [filter, setFilter] = useState<string>('');
     const [size, setSize] = useState<number>(30);
-    const [from, setFrom] = useState<string>(formatDate(new Date(new Date().getTime() - 2 * 24 * 60 * 60 * 1000)));
+    const [from, setFrom] = useState<string>(formatDate(new Date(new Date().getTime() - 6 * 60 * 60 * 1000)));
     const [to, setTo] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [jsonToTable, setJsonToTable] = useState<boolean>(false);
@@ -113,14 +141,14 @@ const LogViewer: React.FC = () => {
     const [severityLabel, setSeverityLabel] = useState<'severity_text' | 'severity_number'>('severity_text');
     const [showLoadMore, setShowLoadMore] = useState<boolean>(false);
     const [message, setMessage] = useState<Message | null>(null);
+    const [frequencies, setFrequencies] = useState<FrequencyData[]>([]);
+    const [interval, setInterval] = useState<number>(10);
 
     const fetchLogs = async () => {
-        const logsUrl = buildLogsUrl({size, query, filter, from, to});
-        const countUrl = buildCountUrl({query, filter, from, to});
         setIsLoading(true);
         setMessage(null);
         try {
-            const logsResponse = await fetch(logsUrl);
+            const logsResponse = await fetch(buildLogsUrl({size, query, filter, from, to}));
             if (logsResponse.status === 200) {
                 const logsData: LogsResponse = await logsResponse.json();
                 setLogs(logsData.logs);
@@ -139,7 +167,9 @@ const LogViewer: React.FC = () => {
             setIsLoading(false);
         }
         try {
-            const countResponse = await fetch(countUrl);
+            const countResponse = await fetch(buildCountUrl('/count', {query, filter, from, to}));
+            const interval = calcInterval(from, to);
+            const frequenciesResponse = await fetch(buildCountUrl('/frequencies', {query, filter, from, to, interval}));
             if (countResponse.status === 200) {
                 const countData: CountResponse = await countResponse.json();
                 setCount(countData.totalCount);
@@ -150,6 +180,22 @@ const LogViewer: React.FC = () => {
                     status: number,
                     detail: string
                 } = await countResponse.json();
+                setMessage({
+                    status: 'error',
+                    text: data.detail
+                });
+            }
+            if (frequenciesResponse.status === 200) {
+                const frequenciesData: FrequenciesResponse = await frequenciesResponse.json();
+                setInterval(interval);
+                setFrequencies(frequenciesData.frequencies);
+            } else {
+                const data: {
+                    type: string,
+                    title: string,
+                    status: number,
+                    detail: string
+                } = await frequenciesResponse.json();
                 setMessage({
                     status: 'error',
                     text: data.detail
@@ -301,7 +347,8 @@ const LogViewer: React.FC = () => {
             >View Logs
             </button>
             {message && <MessageBox status={message.status}>{message.text}</MessageBox>}
-            {count && <p>Total Count: <strong>{count.toLocaleString()}</strong></p>}
+            {frequencies.length > 0 && <FrequenciesChart data={frequencies} interval={interval}/>}
+            {count !== undefined && <p>Total Count: <strong>{count.toLocaleString()}</strong></p>}
             <table className="table">
                 <thead>
                 <tr>

@@ -1,6 +1,8 @@
 package am.ik.lognroll.logs.jdbc;
 
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,6 +146,26 @@ public class JdbcLogQuery implements LogQuery {
 			.params(queryAndParams.params()) //
 			.query(Long.class)
 			.single();
+	}
+
+	@Override
+	public List<Frequency> findFrequencies(SearchRequest request, Duration interval) {
+		StringBuilder sql = new StringBuilder("""
+				SELECT strftime('%%Y-%%m-%%dT%%H', observed_timestamp / 1000, 'unixepoch') || ':' ||
+				   printf('%%02d', (strftime('%%M', observed_timestamp / 1000, 'unixepoch') / %d) * %d) ||
+				   ':00Z'         AS date,
+				   count(log_id) AS count
+				""".formatted(interval.toMinutes(), interval.toMinutes()));
+		QueryAndParams queryAndParams = buildQueryAndParams(request);
+		sql.append(queryAndParams.query());
+		sql.append("""
+				GROUP BY date
+				ORDER BY date ASC;
+				""");
+		return this.jdbcClient.sql(sql.toString()) //
+			.params(queryAndParams.params()) //
+			.query((rs, rowNum) -> new Frequency(Instant.parse(rs.getString("date")), rs.getLong("count"))) //
+			.list();
 	}
 
 	private record QueryAndParams(String query, Map<String, Object> params) {
