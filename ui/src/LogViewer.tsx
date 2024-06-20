@@ -5,6 +5,7 @@ import './LogViewer.css';
 import {JSONToHTMLTable} from "@kevincobain2000/json-to-html-table";
 // @ts-expect-error TODO
 import logfmt from 'logfmt';
+import {MessageBox, MessageStatus} from "./MessageBox.tsx";
 
 interface BuildUrlParams {
     size: number;
@@ -57,6 +58,11 @@ interface Log {
     resourceAttributes?: Record<string, object>;
 }
 
+interface Message {
+    text: string;
+    status: MessageStatus;
+}
+
 const LogViewer: React.FC = () => {
     const [logs, setLogs] = useState<Log[]>([]);
     const [query, setQuery] = useState<string>('');
@@ -72,15 +78,25 @@ const LogViewer: React.FC = () => {
     const [useSeverityText, setUseSeverityText] = useState<boolean>(true);
     const [severityLabel, setSeverityLabel] = useState<'severity_text' | 'severity_number'>('severity_text');
     const [showLoadMore, setShowLoadMore] = useState<boolean>(false);
+    const [message, setMessage] = useState<Message | null>(null);
 
     const fetchLogs = async () => {
         const url = buildUrl({size, query, filter, from, to});
         setIsLoading(true);
+        setMessage(null);
         try {
             const response = await fetch(url);
-            const data: Log[] = await response.json();
-            setLogs(data);
-            setShowLoadMore(data.length >= size);
+            if (response.status === 200) {
+                const data: Log[] = await response.json();
+                setLogs(data);
+                setShowLoadMore(data.length >= size);
+            } else {
+                const data: { type: string, title: string, status: number, detail: string } = await response.json();
+                setMessage({
+                    status: 'error',
+                    text: data.detail
+                });
+            }
         } catch (error) {
             console.error('Error fetching logs:', error);
         } finally {
@@ -228,7 +244,7 @@ const LogViewer: React.FC = () => {
                     disabled={isLoading}
             >View Logs
             </button>
-
+            {message && <MessageBox status={message.status}>{message.text}</MessageBox>}
             <table className="table">
                 <thead>
                 <tr>

@@ -8,13 +8,17 @@ import am.ik.lognroll.logs.filter.FilterExpressionTextParser;
 import am.ik.pagination.CursorPageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sqlite.SQLiteException;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class QueryController {
@@ -44,9 +48,22 @@ public class QueryController {
 			searchRequest.query(query);
 		}
 		if (StringUtils.hasText(filter)) {
-			searchRequest.filterExpression(this.parser.parse(filter));
+			try {
+				searchRequest.filterExpression(this.parser.parse(filter));
+			}
+			catch (FilterExpressionTextParser.FilterExpressionParseException e) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+			}
 		}
-		return this.logQuery.findLatestLogs(searchRequest.build());
+		try {
+			return this.logQuery.findLatestLogs(searchRequest.build());
+		}
+		catch (UncategorizedSQLException e) {
+			if (e.getCause() instanceof SQLiteException) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage());
+			}
+			throw e;
+		}
 	}
 
 	@DeleteMapping(path = "/api/logs")
