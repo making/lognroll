@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteException;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.UncategorizedSQLException;
@@ -31,9 +33,12 @@ public class QueryController {
 
 	private final Logger logger = LoggerFactory.getLogger(QueryController.class);
 
-	public QueryController(LogQuery logQuery, LogStore logStore) {
+	private final Resource dbFile;
+
+	public QueryController(LogQuery logQuery, LogStore logStore, @Value("file://${lognroll.db.path}") Resource dbFile) {
 		this.logQuery = logQuery;
 		this.logStore = logStore;
+		this.dbFile = dbFile;
 	}
 
 	@GetMapping(path = "/api/logs")
@@ -93,6 +98,11 @@ public class QueryController {
 			}
 			throw e;
 		}
+	}
+
+	@GetMapping(path = "/api/logs/download")
+	public Resource downloadLogs() {
+		return this.dbFile;
 	}
 
 	@DeleteMapping(path = "/api/logs")
