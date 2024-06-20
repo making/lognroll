@@ -6,6 +6,7 @@ import java.util.List;
 import am.ik.lognroll.logs.LogQuery.Cursor;
 import am.ik.lognroll.logs.filter.FilterExpressionTextParser;
 import am.ik.pagination.CursorPageRequest;
+import jakarta.annotation.Nullable;
 import org.jilt.Builder;
 import org.jilt.BuilderStyle;
 import org.slf4j.Logger;
@@ -22,9 +23,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import static am.ik.lognroll.logs.LogsResponseBuilder.Optional.totalCount;
 import static am.ik.lognroll.logs.LogsResponseBuilder.logs;
 import static am.ik.lognroll.logs.LogsResponseBuilder.logsResponse;
-import static am.ik.lognroll.logs.LogsResponseBuilder.totalCount;
 
 @RestController
 public class QueryController {
@@ -63,7 +64,13 @@ public class QueryController {
 		}
 		try {
 			LogQuery.SearchRequest request = searchRequest.build();
-			return logsResponse(logs(this.logQuery.findLatestLogs(request)), totalCount(this.logQuery.count(request)));
+			List<Log> logs = this.logQuery.findLatestLogs(request);
+			if (pageRequest.cursor() == null) {
+				return logsResponse(logs(logs), totalCount(this.logQuery.count(request)));
+			}
+			else {
+				return logsResponse(logs(logs));
+			}
 		}
 		catch (UncategorizedSQLException e) {
 			if (e.getCause() instanceof SQLiteException) {
@@ -81,7 +88,7 @@ public class QueryController {
 	}
 
 	@Builder(style = BuilderStyle.FUNCTIONAL)
-	public record LogsResponse(List<Log> logs, long totalCount) {
+	public record LogsResponse(List<Log> logs, @Nullable Long totalCount) {
 	}
 
 }

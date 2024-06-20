@@ -45,7 +45,7 @@ function convertUtcToLocal(utcDateString: string): string {
 
 interface LogsResponse {
     logs: Log[],
-    totalCount: number
+    totalCount?: number
 }
 
 interface Log {
@@ -127,7 +127,7 @@ const LogViewer: React.FC = () => {
         setIsLoading(true);
         try {
             const response = await fetch(url);
-            const moreLogs: Log[] = await response.json();
+            const {logs: moreLogs}: LogsResponse = await response.json();
             setLogs([...logs, ...moreLogs]);
             setShowLoadMore(moreLogs.length >= size);
         } catch (error) {
