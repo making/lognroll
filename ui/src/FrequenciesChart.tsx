@@ -40,7 +40,6 @@ interface FrequenciesChartProps {
 }
 
 const FrequenciesChart: React.FC<FrequenciesChartProps> = ({data, interval}) => {
-    data.reverse();
     const filled = fillMissingData(data, interval);
     return <>
         <BarChart
