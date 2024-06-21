@@ -98,7 +98,9 @@ $ curl -s http://localhost:4318/api/logs -H "Authorization: Bearer changeme" | j
 
 Go to the web UI http://localhost:4318 (username: empty, password: `changeme` same as token)
 
-<img width="1024" alt="image" src="https://github.com/making/lognroll/assets/106908/03f41383-4c24-4367-81ba-0dcbe61a2e71">
+Clear the `from` field since the sample log is too old and click the "View Logs" button, you'll see the search result as below: 
+
+<img width="1024" alt="image" src="https://github.com/making/lognroll/assets/106908/d3513ca2-825a-4229-8dc2-fe4f02460ef6">
 
 ## Send from OTEL Collector
 
