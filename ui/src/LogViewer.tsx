@@ -95,6 +95,13 @@ interface Message {
     status: MessageStatus;
 }
 
+interface Problem {
+    type: string;
+    title: string;
+    status: number;
+    detail: string;
+}
+
 const formatDate = (date: Date) => {
     const year = date.getFullYear();
     const month = ('0' + (date.getMonth() + 1)).slice(-2);
@@ -144,6 +151,11 @@ const LogViewer: React.FC = () => {
     const [frequencies, setFrequencies] = useState<FrequencyData[]>([]);
     const [interval, setInterval] = useState<number>(10);
 
+    const setProblemMessage = (data: Problem) => setMessage({
+        status: 'error',
+        text: data.detail
+    });
+
     const fetchLogs = async () => {
         setIsLoading(true);
         setMessage(null);
@@ -155,11 +167,8 @@ const LogViewer: React.FC = () => {
                 setCount('Counting...');
                 setShowLoadMore(logsData.logs.length >= size);
             } else {
-                const data: { type: string, title: string, status: number, detail: string } = await logsResponse.json();
-                setMessage({
-                    status: 'error',
-                    text: data.detail
-                });
+                const data: Problem = await logsResponse.json();
+                setProblemMessage(data);
             }
         } catch (error) {
             console.error('Error fetching logs:', error);
@@ -174,32 +183,16 @@ const LogViewer: React.FC = () => {
                 const countData: CountResponse = await countResponse.json();
                 setCount(countData.totalCount);
             } else {
-                const data: {
-                    type: string,
-                    title: string,
-                    status: number,
-                    detail: string
-                } = await countResponse.json();
-                setMessage({
-                    status: 'error',
-                    text: data.detail
-                });
+                const data: Problem = await countResponse.json();
+                setProblemMessage(data);
             }
             if (frequenciesResponse.status === 200) {
                 const frequenciesData: FrequenciesResponse = await frequenciesResponse.json();
-                setInterval(interval);
                 setFrequencies(frequenciesData.frequencies);
+                setInterval(interval);
             } else {
-                const data: {
-                    type: string,
-                    title: string,
-                    status: number,
-                    detail: string
-                } = await frequenciesResponse.json();
-                setMessage({
-                    status: 'error',
-                    text: data.detail
-                });
+                const data: Problem = await frequenciesResponse.json();
+                setProblemMessage(data);
             }
         } catch (error) {
             console.error('Error fetching logs:', error);
@@ -222,9 +215,14 @@ const LogViewer: React.FC = () => {
         setIsLoading(true);
         try {
             const response = await fetch(url);
-            const {logs: moreLogs}: LogsResponse = await response.json();
-            setLogs([...logs, ...moreLogs]);
-            setShowLoadMore(moreLogs.length >= size);
+            if (response.status == 200) {
+                const {logs: moreLogs}: LogsResponse = await response.json();
+                setLogs([...logs, ...moreLogs]);
+                setShowLoadMore(moreLogs.length >= size);
+            } else {
+                const data: Problem = await response.json();
+                setProblemMessage(data);
+            }
         } catch (error) {
             console.error('Error fetching more logs:', error);
         } finally {
