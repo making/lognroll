@@ -66,13 +66,13 @@ public class JdbcLogQuery implements LogQuery {
 		}
 		if (request.from() != null) {
 			sql.append("""
-					AND timestamp >= :from
+					AND observed_timestamp >= :from
 					""");
 			params.put("from", Timestamp.from(request.from()));
 		}
 		if (request.to() != null) {
 			sql.append("""
-					AND timestamp <= :to
+					AND observed_timestamp <= :to
 					""");
 			params.put("to", Timestamp.from(request.to()));
 		}
