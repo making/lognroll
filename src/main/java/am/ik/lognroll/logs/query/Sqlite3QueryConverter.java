@@ -24,18 +24,21 @@ public class Sqlite3QueryConverter {
 				case TokenNode token -> {
 					if (!builder.isEmpty()) {
 						switch (token.type()) {
-							case EXCLUDE -> builder.append(" NOT ");
 							case OR -> builder.append(" OR ");
+							case EXCLUDE -> builder.append(" ");
 							default -> builder.append(" AND ");
 						}
 					}
 					if (token.type() == TokenType.OR) {
 						if (iterator.hasNext()) {
-							builder.append(iterator.next().value());
+							builder.append("\"").append(iterator.next().value()).append("\"");
 						}
 					}
+					else if (token.type() == TokenType.EXCLUDE) {
+						builder.append("NOT \"").append(token.value()).append("\"");
+					}
 					else {
-						builder.append(token.value());
+						builder.append("\"").append(token.value()).append("\"");
 					}
 				}
 				case RootNode nest -> {
