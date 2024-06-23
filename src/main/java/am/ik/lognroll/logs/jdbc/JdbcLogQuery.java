@@ -12,6 +12,7 @@ import am.ik.lognroll.logs.LogBuilder;
 import am.ik.lognroll.logs.LogQuery;
 import am.ik.lognroll.logs.filter.FilterExpressionConverter;
 import am.ik.lognroll.logs.filter.converter.Sqlite3FilterExpressionConverter;
+import am.ik.lognroll.logs.query.Sqlite3QueryConverter;
 import am.ik.lognroll.util.Json;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -80,7 +81,7 @@ public class JdbcLogQuery implements LogQuery {
 			sql.append("""
 					AND log_fts MATCH(:query)
 					""");
-			params.put("query", "\"" + query + "\"");
+			params.put("query", "\"" + Sqlite3QueryConverter.convertQuery(query) + "\"");
 		}
 		if (request.filterExpression() != null) {
 			sql.append("AND ")
