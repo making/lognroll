@@ -81,7 +81,7 @@ public class JdbcLogQuery implements LogQuery {
 			sql.append("""
 					AND log_fts MATCH(:query)
 					""");
-			params.put("query", "\"" + Sqlite3QueryConverter.convertQuery(query) + "\"");
+			params.put("query", Sqlite3QueryConverter.convertQuery(query));
 		}
 		if (request.filterExpression() != null) {
 			sql.append("AND ")
