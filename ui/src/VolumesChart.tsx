@@ -16,10 +16,10 @@ const fillMissingData = (data: VolumeData[], interval: number) => {
     while (currentTime <= endTime) {
         const givenData = data[index];
         if (currentTime.getTime() === new Date(givenData.date).getTime()) {
-            filledData.push({time: currentTime.toLocaleString(), count: givenData.count});
+            filledData.push({date: currentTime.toLocaleString(), count: givenData.count});
             index++;
         } else {
-            filledData.push({time: currentTime.toLocaleString(), count: 0});
+            filledData.push({date: currentTime.toLocaleString(), count: 0});
         }
         currentTime.setMinutes(currentTime.getMinutes() + interval);
     }
@@ -37,9 +37,10 @@ const TooltipContent = (props: TooltipProps<string, string>) => {
 interface VolumesChartProps {
     data: VolumeData[];
     interval: number;
+    onClick: (date: string) => void;
 }
 
-const VolumesChart: React.FC<VolumesChartProps> = ({data, interval}) => {
+const VolumesChart: React.FC<VolumesChartProps> = ({data, interval, onClick}) => {
     const filled = fillMissingData(data, interval);
     return <>
         <BarChart
@@ -50,10 +51,10 @@ const VolumesChart: React.FC<VolumesChartProps> = ({data, interval}) => {
                 top: 15
             }}>
             <CartesianGrid strokeDasharray="3 3"/>
-            <XAxis dataKey="time"/>
+            <XAxis dataKey="date"/>
             <YAxis/>
             <Tooltip content={<TooltipContent/>}/>
-            <Bar dataKey="count" fill="#8884d8"/>
+            <Bar dataKey="count" fill="#8884d8" onClick={x => onClick(x.date)}/>
         </BarChart>
         <span>interval: {interval}min</span>
     </>

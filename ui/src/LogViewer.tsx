@@ -346,7 +346,12 @@ const LogViewer: React.FC = () => {
             >View Logs
             </button>
             {message && <MessageBox status={message.status}>{message.text}</MessageBox>}
-            {volumes.length > 0 && <VolumesChart data={volumes} interval={interval}/>}
+            {volumes.length > 0 && <VolumesChart data={volumes} interval={interval} onClick={date => {
+                const from = new Date(date);
+                const to = new Date(from.getTime() + 10 * 60 * 1000);
+                setFrom(formatDate(from));
+                setTo(formatDate(to));
+            }}/>}
             {count !== undefined && <p>Total Count: <strong>{count.toLocaleString()}</strong></p>}
             <table className="table">
                 <thead>
