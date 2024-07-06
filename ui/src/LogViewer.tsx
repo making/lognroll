@@ -6,7 +6,7 @@ import {JSONToHTMLTable} from "@kevincobain2000/json-to-html-table";
 // @ts-expect-error TODO
 import logfmt from 'logfmt';
 import {MessageBox, MessageStatus} from "./MessageBox.tsx";
-import FrequenciesChart, {FrequencyData} from "./FrequenciesChart.tsx";
+import VolumesChart, {VolumeData} from "./VolumesChart.tsx";
 
 interface BuildUrlParams {
     size?: number;
@@ -71,8 +71,8 @@ interface CountResponse {
     totalCount: number
 }
 
-interface FrequenciesResponse {
-    frequencies: FrequencyData[]
+interface VolumesResponse {
+    volumes: VolumeData[]
 }
 
 interface Log {
@@ -148,7 +148,7 @@ const LogViewer: React.FC = () => {
     const [severityLabel, setSeverityLabel] = useState<'severity_text' | 'severity_number'>('severity_text');
     const [showLoadMore, setShowLoadMore] = useState<boolean>(false);
     const [message, setMessage] = useState<Message | null>(null);
-    const [frequencies, setFrequencies] = useState<FrequencyData[]>([]);
+    const [volumes, setVolumes] = useState<VolumeData[]>([]);
     const [interval, setInterval] = useState<number>(10);
 
     const setProblemMessage = (data: Problem) => setMessage({
@@ -178,7 +178,7 @@ const LogViewer: React.FC = () => {
         try {
             const countResponse = await fetch(buildCountUrl('/count', {query, filter, from, to}));
             const interval = calcInterval(from, to);
-            const frequenciesResponse = await fetch(buildCountUrl('/frequencies', {query, filter, from, to, interval}));
+            const volumesResponse = await fetch(buildCountUrl('/volumes', {query, filter, from, to, interval}));
             if (countResponse.status === 200) {
                 const countData: CountResponse = await countResponse.json();
                 setCount(countData.totalCount);
@@ -186,12 +186,12 @@ const LogViewer: React.FC = () => {
                 const data: Problem = await countResponse.json();
                 setProblemMessage(data);
             }
-            if (frequenciesResponse.status === 200) {
-                const frequenciesData: FrequenciesResponse = await frequenciesResponse.json();
-                setFrequencies(frequenciesData.frequencies);
+            if (volumesResponse.status === 200) {
+                const volumesData: VolumesResponse = await volumesResponse.json();
+                setVolumes(volumesData.volumes);
                 setInterval(interval);
             } else {
-                const data: Problem = await frequenciesResponse.json();
+                const data: Problem = await volumesResponse.json();
                 setProblemMessage(data);
             }
         } catch (error) {
@@ -346,7 +346,7 @@ const LogViewer: React.FC = () => {
             >View Logs
             </button>
             {message && <MessageBox status={message.status}>{message.text}</MessageBox>}
-            {frequencies.length > 0 && <FrequenciesChart data={frequencies} interval={interval}/>}
+            {volumes.length > 0 && <VolumesChart data={volumes} interval={interval}/>}
             {count !== undefined && <p>Total Count: <strong>{count.toLocaleString()}</strong></p>}
             <table className="table">
                 <thead>

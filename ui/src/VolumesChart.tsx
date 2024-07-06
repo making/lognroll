@@ -4,8 +4,8 @@ import {JSONToHTMLTable} from "@kevincobain2000/json-to-html-table";
 import {TooltipProps} from "recharts/types/component/Tooltip";
 import React from "react";
 
-export type FrequencyData = { date: string, count: number };
-const fillMissingData = (data: FrequencyData[], interval: number) => {
+export type VolumeData = { date: string, count: number };
+const fillMissingData = (data: VolumeData[], interval: number) => {
     if (data.length <= 1) {
         return data;
     }
@@ -34,12 +34,12 @@ const TooltipContent = (props: TooltipProps<string, string>) => {
                             tableClassName="table"/>;
 };
 
-interface FrequenciesChartProps {
-    data: FrequencyData[];
+interface VolumesChartProps {
+    data: VolumeData[];
     interval: number;
 }
 
-const FrequenciesChart: React.FC<FrequenciesChartProps> = ({data, interval}) => {
+const VolumesChart: React.FC<VolumesChartProps> = ({data, interval}) => {
     const filled = fillMissingData(data, interval);
     return <>
         <BarChart
@@ -59,4 +59,4 @@ const FrequenciesChart: React.FC<FrequenciesChartProps> = ({data, interval}) => 
     </>
 };
 
-export default FrequenciesChart;
+export default VolumesChart;

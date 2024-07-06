@@ -15,9 +15,9 @@ public interface LogQuery {
 
 	long count(SearchRequest request);
 
-	List<Frequency> findFrequencies(SearchRequest request, Duration interval);
+	List<Volume> findVolumes(SearchRequest request, Duration interval);
 
-	record Frequency(Instant date, long count) {
+	record Volume(Instant date, long count) {
 
 	}
 

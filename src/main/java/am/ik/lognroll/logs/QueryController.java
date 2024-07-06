@@ -101,8 +101,8 @@ public class QueryController {
 		}
 	}
 
-	@GetMapping(path = "/api/logs/frequencies")
-	public FrequenciesResponse showFrequencies(@RequestParam(required = false) String query,
+	@GetMapping(path = "/api/logs/volumes")
+	public VolumesResponse showVolumes(@RequestParam(required = false) String query,
 			@RequestParam(required = false) String filter, @RequestParam(required = false) Instant from,
 			@RequestParam(required = false) Instant to,
 			@RequestParam(required = false, defaultValue = "PT10M") Duration interval) {
@@ -120,7 +120,7 @@ public class QueryController {
 		}
 		LogQuery.SearchRequest request = searchRequest.build();
 		try {
-			return new FrequenciesResponse(this.logQuery.findFrequencies(request, interval));
+			return new VolumesResponse(this.logQuery.findVolumes(request, interval));
 		}
 		catch (UncategorizedSQLException e) {
 			if (e.getCause() instanceof SQLiteException) {
@@ -148,7 +148,7 @@ public class QueryController {
 	public record CountResponse(long totalCount) {
 	}
 
-	public record FrequenciesResponse(List<LogQuery.Frequency> frequencies) {
+	public record VolumesResponse(List<LogQuery.Volume> volumes) {
 	}
 
 }

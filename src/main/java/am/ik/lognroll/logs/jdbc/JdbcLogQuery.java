@@ -150,7 +150,7 @@ public class JdbcLogQuery implements LogQuery {
 	}
 
 	@Override
-	public List<Frequency> findFrequencies(SearchRequest request, Duration interval) {
+	public List<Volume> findVolumes(SearchRequest request, Duration interval) {
 		StringBuilder sql = new StringBuilder("""
 				SELECT strftime('%%Y-%%m-%%dT%%H', observed_timestamp / 1000, 'unixepoch') || ':' ||
 				   printf('%%02d', (strftime('%%M', observed_timestamp / 1000, 'unixepoch') / %d) * %d) ||
@@ -165,7 +165,7 @@ public class JdbcLogQuery implements LogQuery {
 				""");
 		return this.jdbcClient.sql(sql.toString()) //
 			.params(queryAndParams.params()) //
-			.query((rs, rowNum) -> new Frequency(Instant.parse(rs.getString("date")), rs.getLong("count"))) //
+			.query((rs, rowNum) -> new Volume(Instant.parse(rs.getString("date")), rs.getLong("count"))) //
 			.list();
 	}
 
