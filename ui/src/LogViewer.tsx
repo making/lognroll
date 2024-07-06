@@ -254,6 +254,7 @@ const LogViewer: React.FC = () => {
                    onChange={(e: ChangeEvent<HTMLInputElement>) => setFilter(e.target.value)}
                    onKeyDown={handleKeyDown}
                    disabled={isLoading}
+                   value={filter}
                    style={{width: '400px'}}
             />&nbsp;
             <input type="number"
@@ -366,15 +367,31 @@ const LogViewer: React.FC = () => {
                     const timestamp = useOccurredTimestamp ? log.timestamp : log.observedTimestamp;
                     return <tr key={log.logId}>
                         <td>{useLocalTimezone ? convertUtcToLocal(timestamp) : timestamp}</td>
-                        <td>{useSeverityText ? log.severityText : log.severityNumber}</td>
-                        <td>{log.serviceName}</td>
-                        <td>{log.scope}</td>
+                        <td><span
+                            onClick={() => {
+                                if (useSeverityText) {
+                                    setFilter(filter ? `${filter} AND severity_text=='${log.severityText}'` : `severity_text=='${log.severityText}'`);
+                                } else {
+                                    setFilter(filter ? `${filter} AND severity_number=='${log.severityNumber}'` : `severity_number=='${log.severityNumber}'`);
+                                }
+                            }}>{useSeverityText ? log.severityText : log.severityNumber}</span></td>
+                        <td><span
+                            onClick={() => setFilter(filter ? `${filter} AND service_name=='${log.serviceName}'` : `service_name=='${log.serviceName}'`)}>{log.serviceName}</span>
+                        </td>
+                        <td><span
+                            onClick={() => setFilter(filter ? `${filter} AND scope=='${log.scope}'` : `scope=='${log.scope}'`)}>{log.scope}</span>
+                        </td>
                         <td>{log.body && shouldJsonToTable(log) ? <JSONToHTMLTable data={JSON.parse(log.body)}
                                                                                    tableClassName="table"/> : (shouldLogfmtToTable(log) ?
                             <JSONToHTMLTable data={logfmt.parse(log.body)}
                                              tableClassName="table"/> : log.body)}</td>
-                        <td>{log.traceId}</td>
-                        <td>{log.spanId}</td>
+
+                        <td><span
+                            onClick={() => setFilter(filter ? `${filter} AND trace_id=='${log.traceId}'` : `trace_id=='${log.traceId}'`)}>{log.traceId}</span>
+                        </td>
+                        <td><span
+                            onClick={() => setFilter(filter ? `${filter} AND span_id=='${log.spanId}'` : `span_id=='${log.spanId}'`)}>{log.spanId}</span>
+                        </td>
                         <td>
                             {jsonToTable ? <JSONToHTMLTable
                                 data={log.attributes || []}
