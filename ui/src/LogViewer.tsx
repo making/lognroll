@@ -137,7 +137,7 @@ const LogViewer: React.FC = () => {
     const [query, setQuery] = useState<string>('');
     const [filter, setFilter] = useState<string>('');
     const [size, setSize] = useState<number>(30);
-    const [from, setFrom] = useState<string>(formatDate(new Date(new Date().getTime() - 6 * 60 * 60 * 1000)));
+    const [from, setFrom] = useState<string>(formatDate(new Date(new Date().getTime() - 12 * 60 * 60 * 1000)));
     const [to, setTo] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [jsonToTable, setJsonToTable] = useState<boolean>(false);
