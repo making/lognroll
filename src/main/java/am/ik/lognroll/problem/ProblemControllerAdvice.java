@@ -1,9 +1,5 @@
 package am.ik.lognroll.problem;
 
-import java.util.Optional;
-
-import io.micrometer.tracing.Span;
-import io.micrometer.tracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,27 +18,18 @@ public class ProblemControllerAdvice {
 
 	private final Logger log = LoggerFactory.getLogger(ProblemControllerAdvice.class);
 
-	private final Tracer tracer;
-
-	public ProblemControllerAdvice(Optional<Tracer> tracer) {
-		this.tracer = tracer.orElseGet(() -> {
-			log.warn("Tracer is not found. NOOP trace is used instead.");
-			return Tracer.NOOP; /* for test */
-		});
-	}
-
 	@ExceptionHandler(ResponseStatusException.class)
 	public ProblemDetail handleResponseStatusException(ResponseStatusException e) {
 		ProblemDetail problemDetail = ProblemDetail.forStatus(e.getStatusCode());
 		problemDetail.setDetail(e.getReason());
-		return setTraceId(problemDetail);
+		return problemDetail;
 	}
 
 	@ExceptionHandler(NoResourceFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ProblemDetail handleNoResourceFoundException(NoResourceFoundException e) {
 		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
-		return setTraceId(problemDetail);
+		return problemDetail;
 	}
 
 	@ExceptionHandler(RuntimeException.class)
@@ -51,7 +38,7 @@ public class ProblemControllerAdvice {
 		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
 				"Unexpected runtime error occurred!");
 		log.error("Unexpected runtime error occurred!", e);
-		return setTraceId(problemDetail);
+		return problemDetail;
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -60,14 +47,6 @@ public class ProblemControllerAdvice {
 		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
 				"Unexpected error occurred!");
 		log.error("Unexpected error occurred!", e);
-		return setTraceId(problemDetail);
-	}
-
-	private ProblemDetail setTraceId(ProblemDetail problemDetail) {
-		final Span currentSpan = tracer.currentSpan();
-		if (currentSpan != null) {
-			problemDetail.setProperty("traceId", currentSpan.context().traceId());
-		}
 		return problemDetail;
 	}
 
