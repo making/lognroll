@@ -18,32 +18,34 @@ on:
     - .github/workflows/*
   workflow_dispatch:
 jobs:
-  build:
+  test:
+    uses: making/workflows/.github/workflows/maven-unit-test.yaml@main
+    with:
+      e2e_test: true
+      test_url_1: http://localhost:8080/actuator/health
+  build-jvm-image:
+    needs: test
+    uses: making/workflows/.github/workflows/build-docker-image-maven-jvm.yaml@main
+    with:
+      image_file: image.yaml
+  build-native-image:
+    needs: test
+    uses: making/workflows/.github/workflows/build-docker-image-maven-native.yaml@main
+    with:
+      image_file: image_native.yaml
+      e2e_test: true
+      test_url_1: http://localhost:8080/actuator/health
+      # TODO how to test?
+      #  cat src/test/resources/logs.json | curl -H "Content-Type: application/json" -H "Authorization: Bearer changeme" --fail --show-error --silent http://localhost:8080/v1/logs --data-binary @- -v
+      #  curl -s http://localhost:8080/api/logs -H "Authorization: Bearer changeme" | jq .
+  deploy-to-fly:
+    needs: build-native-image
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
     steps:
     - uses: actions/checkout@v4
-    - name: Install GraalVM
-      uses: graalvm/setup-graalvm@v1
-      with:
-        java-version: '21'
-        distribution: 'graalvm'
-        cache: 'maven'
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Unit Tests
-      run: ./mvnw -V --no-transfer-progress clean test
-    - name: Executable Jar
-      run: |
-        set -e
-        ./mvnw -V --no-transfer-progress package -DskipTests
-        java -jar target/*.jar &
-        .github/workflows/wait.sh
-        curl --fail --show-error --silent http://localhost:4318/actuator/health
-        cat src/test/resources/logs.json | curl -H "Content-Type: application/json" -H "Authorization: Bearer changeme" --fail --show-error --silent http://localhost:4318/v1/logs --data-binary @- -v
-        curl -s http://localhost:4318/api/logs -H "Authorization: Bearer changeme" | jq .
-        pkill -KILL java
     - name: Import Secrets
       if: github.ref == 'refs/heads/main'
       id: secrets
@@ -55,27 +57,7 @@ jobs:
         url: ${{ secrets.VAULT_ADDR }}
         role: cicd
         secrets: |
-          kv/data/cicd/github api_token | GITHUB_API_TOKEN ;
           kv/data/cicd/fly api_token | FLY_API_TOKEN
-    - name: Docker Login
-      if: github.ref == 'refs/heads/main'
-      run: docker login ghcr.io -u ${GITHUB_REPOSITORY_OWNER} -p ${GITHUB_API_TOKEN}
-    - name: Build Docker Image (JVM)
-      if: github.ref == 'refs/heads/main'
-      run: |
-        set -e
-        ./mvnw -V --no-transfer-progress spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=ghcr.io/${GITHUB_REPOSITORY}:jvm
-    - name: Build Docker Image (Native)
-      if: github.ref == 'refs/heads/main'
-      run: |
-        set -e
-        ./mvnw -V --no-transfer-progress spring-boot:build-image -Pnative -DskipTests -Dspring-boot.build-image.imageName=ghcr.io/${GITHUB_REPOSITORY}:native
-    - name: Docker Push
-      if: github.ref == 'refs/heads/main'
-      run: |
-        set -e
-        docker push ghcr.io/${GITHUB_REPOSITORY}:jvm
-        docker push ghcr.io/${GITHUB_REPOSITORY}:native
     - name: Install Fly
       if: github.ref == 'refs/heads/main'
       uses: superfly/flyctl-actions/setup-flyctl@master
