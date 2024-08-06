@@ -47,9 +47,33 @@ jobs:
       # TODO how to test?
       #  cat src/test/resources/logs.json | curl -H "Content-Type: application/json" -H "Authorization: Bearer changeme" --fail --show-error --silent http://localhost:8080/v1/logs --data-binary @- -v
       #  curl -s http://localhost:8080/api/logs -H "Authorization: Bearer changeme" | jq .
+  build-native-x86_64-pc-linux:
+    needs: test
+    permissions:
+      contents: write
+    uses: making/workflows/.github/workflows/build-native-image.yaml@main
+    with:
+      download_target: false
+      e2e_test: true
+      test_url_1: http://localhost:8080/actuator/health
+      runs-on: ubuntu-latest
+      binary_suffix: -x86_64-pc-linux
+  build-native-aarch64-apple-darwin:
+    needs: test
+    permissions:
+      contents: write
+    uses: making/workflows/.github/workflows/build-native-image.yaml@main
+    with:
+      download_target: false
+      e2e_test: true
+      test_url_1: http://localhost:8080/actuator/health
+      runs-on: macos-14
+      binary_suffix: -aarch64-apple-darwin
   deploy-to-fly:
     needs: build-native-image
     permissions:
       id-token: write
       contents: read
     uses: ./.github/workflows/deploy-to-fly.yaml
+    with:
+      vault_url: ${{ secrets.VAULT_ADDR }}
