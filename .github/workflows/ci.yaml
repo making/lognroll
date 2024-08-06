@@ -46,4 +46,7 @@ jobs:
       #  curl -s http://localhost:8080/api/logs -H "Authorization: Bearer changeme" | jq .
   deploy-to-fly:
     needs: build-native-image
+    permissions:
+      id-token: write
+      contents: read
     uses: ./.github/workflows/deploy-to-fly.yaml
