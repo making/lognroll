@@ -40,4 +40,4 @@ jobs:
       #  curl -s http://localhost:8080/api/logs -H "Authorization: Bearer changeme" | jq .
   deploy-to-fly:
     needs: build-native-image
-    uses: .github/workflows/deploy-to-fly.yaml
+    uses: ./.github/workflows/deploy-to-fly.yaml
