@@ -17,6 +17,8 @@ on:
     - pom.xml
     - .github/workflows/*
   workflow_dispatch:
+env:
+  VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
 jobs:
   test:
     uses: making/workflows/.github/workflows/maven-unit-test.yaml@main
@@ -76,4 +78,4 @@ jobs:
       contents: read
     uses: ./.github/workflows/deploy-to-fly.yaml
     with:
-      vault_url: ${{ secrets.VAULT_ADDR }}
+      vault_url: ${{ env.VAULT_ADDR }}
