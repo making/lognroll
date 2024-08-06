@@ -23,6 +23,7 @@ jobs:
     with:
       e2e_test: true
       test_url_1: http://localhost:8080/actuator/health
+      upload_target: false
   build-jvm-image:
     needs: test
     permissions:
@@ -31,6 +32,7 @@ jobs:
     uses: making/workflows/.github/workflows/build-docker-image-maven-jvm.yaml@main
     with:
       image_file: image.yaml
+      download_target: false
   build-native-image:
     needs: test
     permissions:
@@ -39,6 +41,7 @@ jobs:
     uses: making/workflows/.github/workflows/build-docker-image-maven-native.yaml@main
     with:
       image_file: image_native.yaml
+      download_target: false
       e2e_test: true
       test_url_1: http://localhost:8080/actuator/health
       # TODO how to test?
