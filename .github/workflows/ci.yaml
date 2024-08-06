@@ -25,6 +25,7 @@ jobs:
       test_url_1: http://localhost:8080/actuator/health
       upload_target: false
   build-jvm-image:
+    if: false
     needs: test
     permissions:
       contents: read
@@ -34,6 +35,7 @@ jobs:
       image_file: image.yaml
       download_target: false
   build-native-image:
+    if: false
     needs: test
     permissions:
       contents: read
@@ -81,12 +83,18 @@ jobs:
     needs: [ build-native-x86_64-pc-linux, build-native-aarch64-apple-darwin ]
     runs-on: ubuntu-latest
     steps:
-    - name: Download build artifacts
+    - name: Download build artifacts x86_64-pc-linux
       uses: actions/download-artifact@v2
       with:
-        name: bin
-        path: "*"
+        name: lognroll-x86_64-pc-linux
+        path: lognroll-x86_64-pc-linux
+    - name: Download build artifacts aarch64-apple-darwin
+      uses: actions/download-artifact@v2
+      with:
+        name: lognroll-aarch64-apple-darwin
+        path: lognroll-aarch64-apple-darwin
     - uses: pyTooling/Actions/releaser@r0
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        files: "*"
+        files: |
+          lognroll-aarch64-apple-darwin
