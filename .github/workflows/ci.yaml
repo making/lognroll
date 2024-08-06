@@ -93,8 +93,11 @@ jobs:
       with:
         name: lognroll-aarch64-apple-darwin
         path: lognroll-aarch64-apple-darwin
+    - name: check
+      run: find .
     - uses: pyTooling/Actions/releaser@r0
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         files: |
           lognroll-aarch64-apple-darwin
+          lognroll-x86_64-pc-linux
