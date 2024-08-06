@@ -1,10 +1,6 @@
 name: Deploy to Fly
 on:
   workflow_call:
-    inputs:
-      vault_url:
-        required: true
-        type: string
 jobs:
   deploy:
     runs-on: ubuntu-latest
