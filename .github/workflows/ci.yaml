@@ -77,6 +77,8 @@ jobs:
       VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
   publish-native-binaries:
     needs: build-native-binaries
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
     - name: Download build artifacts x86_64-pc-linux
