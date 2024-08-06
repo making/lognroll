@@ -1,0 +1,69 @@
+name: Deploy to Fly
+on:
+  workflow_call: { }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - uses: actions/checkout@v4
+    - name: Import Secrets
+      if: github.ref == 'refs/heads/main'
+      id: secrets
+      uses: hashicorp/vault-action@v3.0.0
+      with:
+        exportToken: true
+        exportEnv: true
+        method: jwt
+        url: ${{ secrets.VAULT_ADDR }}
+        role: cicd
+        secrets: |
+          kv/data/cicd/fly api_token | FLY_API_TOKEN
+    - name: Install Fly
+      if: github.ref == 'refs/heads/main'
+      uses: superfly/flyctl-actions/setup-flyctl@master
+    - name: Deploy to Fly
+      if: github.ref == 'refs/heads/main'
+      run: |
+        cat <<'EOF' > fly.toml
+        [build]
+        image = "ghcr.io/making/lognroll:native"
+        
+        [[services]]
+        internal_port = 8080
+        protocol = "tcp"
+        
+        [[services.ports]]
+        handlers = ["http"]
+        port = "80"
+        
+        [[services.ports]]
+        handlers = ["tls", "http"]
+        port = "443"
+        
+        [[services.http_checks]]
+        port = 8080
+        interval = 5000
+        grace_period = "5s"
+        method = "get"
+        path = "/actuator/health"
+        protocol = "http"
+        timeout = 5000
+        
+        [metrics]
+        port = 8080
+        path = "/actuator/prometheus"
+        
+        [mounts]
+        source="lognroll_data"
+        destination="/var/lognroll"
+        
+        [env]
+        "spring.application.name" = "${FLY_APP_NAME}"
+        "server.port" = "8080"
+        "lognroll.db.path" = "/var/lognroll/lognroll.db"
+        EOF
+        flyctl apps create --name lognroll --machines || true
+        flyctl deploy -a lognroll --ha=false
