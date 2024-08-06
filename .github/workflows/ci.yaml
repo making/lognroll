@@ -76,4 +76,4 @@ jobs:
       contents: read
     uses: ./.github/workflows/deploy-to-fly.yaml
     secrets:
-      vault_url: ${{ secrets.VAULT_ADDR }}
+      VAULT_ADDR: ${{ secrets.VAULT_ADDR }}

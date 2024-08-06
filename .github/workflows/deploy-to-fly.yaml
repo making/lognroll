@@ -21,7 +21,7 @@ jobs:
         exportToken: true
         exportEnv: true
         method: jwt
-        url: ${{ inputs.vault_url }}
+        url: ${{ secrets.VAULT_ADDR }}
         role: cicd
         secrets: |
           kv/data/cicd/fly api_token | FLY_API_TOKEN
