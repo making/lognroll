@@ -1,6 +1,10 @@
 name: Deploy to Fly
 on:
-  workflow_call: { }
+  workflow_call:
+    inputs:
+      vault_url:
+        required: true
+        type: string
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -17,7 +21,7 @@ jobs:
         exportToken: true
         exportEnv: true
         method: jwt
-        url: ${{ secrets.VAULT_ADDR }}
+        url: ${{ inputs.vault_url }}
         role: cicd
         secrets: |
           kv/data/cicd/fly api_token | FLY_API_TOKEN
