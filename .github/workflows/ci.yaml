@@ -56,7 +56,7 @@ jobs:
       download_target: false
       e2e_test: true
       test_url_1: http://localhost:8080/actuator/health
-      runs-on: ubuntu-latest
+      runs-on: '["ubuntu-latest"]'
       binary_suffix: -x86_64-pc-linux
   build-native-aarch64-apple-darwin:
     needs: test
@@ -67,7 +67,7 @@ jobs:
       download_target: false
       e2e_test: true
       test_url_1: http://localhost:8080/actuator/health
-      runs-on: macos-14
+      runs-on: '["macos-14"]'
       binary_suffix: -aarch64-apple-darwin
   deploy-to-fly:
     needs: build-native-image
