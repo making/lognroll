@@ -49,28 +49,24 @@ jobs:
       # TODO how to test?
       #  cat src/test/resources/logs.json | curl -H "Content-Type: application/json" -H "Authorization: Bearer changeme" --fail --show-error --silent http://localhost:8080/v1/logs --data-binary @- -v
       #  curl -s http://localhost:8080/api/logs -H "Authorization: Bearer changeme" | jq .
-  build-native-x86_64-pc-linux:
+  build-native-binaries:
     needs: test
     permissions:
       contents: write
     uses: making/workflows/.github/workflows/build-native-image.yaml@main
+    strategy:
+      matrix:
+        with:
+        - runs-on: ubuntu-latest
+          binary_suffix: -x86_64-pc-linux
+        - runs-on: macos-14
+          binary_suffix: -aarch64-apple-darwin
     with:
       download_target: false
       e2e_test: true
       test_url_1: http://localhost:8080/actuator/health
-      runs-on: '["ubuntu-latest"]'
-      binary_suffix: -x86_64-pc-linux
-  build-native-aarch64-apple-darwin:
-    needs: test
-    permissions:
-      contents: write
-    uses: making/workflows/.github/workflows/build-native-image.yaml@main
-    with:
-      download_target: false
-      e2e_test: true
-      test_url_1: http://localhost:8080/actuator/health
-      runs-on: '["macos-14"]'
-      binary_suffix: -aarch64-apple-darwin
+      runs-on: ${{ matrix.with.runs-on }}
+      binary_suffix: ${{ matrix.with.binary_suffix }}
   deploy-to-fly:
     needs: build-native-image
     permissions:
@@ -79,8 +75,8 @@ jobs:
     uses: ./.github/workflows/deploy-to-fly.yaml
     secrets:
       VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
-  publish-binaries:
-    needs: [ build-native-x86_64-pc-linux, build-native-aarch64-apple-darwin ]
+  publish-native-binaries:
+    needs: build-native-binaries
     runs-on: ubuntu-latest
     steps:
     - name: Download build artifacts x86_64-pc-linux
@@ -93,11 +89,11 @@ jobs:
       with:
         name: lognroll-aarch64-apple-darwin
         path: lognroll-aarch64-apple-darwin
-    - name: check
+    - name: check files
       run: find .
     - uses: pyTooling/Actions/releaser@r0
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         files: |
-          lognroll-aarch64-apple-darwin
-          lognroll-x86_64-pc-linux
+          ./lognroll-x86_64-pc-linux/lognroll-x86_64-pc-linux
+          ./lognroll-aarch64-apple-darwin/lognroll-aarch64-apple-darwin
