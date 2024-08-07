@@ -14,6 +14,35 @@ a simple OTLP log store
 > [!NOTE]
 > This is a hobby project designed to facilitate the verification of log ingestion with OTLP. It is not intended for use in environments where reliability or high performance is required.
 
+## Run with Pre-built Native Binaries
+
+Lognroll offers pre-built binaries for x86_64-pc-linux, x86_64-apple-darwin, and aarch64-apple-darwin. If you are using one of these environments, downloading these binaries is the easiest way to get started.
+
+* For x86_64-pc-linux
+```
+curl -sL -o lognroll https://github.com/making/lognroll/releases/download/tip/lognroll-x86_64-pc-linux 
+```
+* For x86_64-apple-darwin (Intel Mac)
+```
+curl -sL -o lognroll https://github.com/making/lognroll/releases/download/tip/lognroll-x86_64-apple-darwin
+```
+* For aarch64-apple-darwin (Apple Silicon)
+```
+curl -sL -o lognroll https://github.com/making/lognroll/releases/download/tip/lognroll-aarch64-apple-darwin
+```
+
+After downloading the appropriate binary, you can start lognroll with the following commands:
+
+```
+mkdir -p data
+chmod +x lognroll
+./lognroll --lognroll.db.path=./data/lognroll.db --server.port=4318
+```
+
+* Web UI: http://localhost:4318 (username: empty, password: same as token bellow)
+* OTLP/HTTP endpoint: http://localhost:4318/v1/logs
+* Default bearer token: `changeme` (you can change the token with `--lognroll.auth.token=verysecuretoken`)
+
 ## Run with Docker
 
 Run with the native image version. It starts up quickly (usually in less than a second), but it does not currently work on Arm environments such as Apple Silicon.
@@ -29,9 +58,6 @@ Or the JVM version will work in any environment.
 mkdir -p data
 docker run --rm -p 4318:4318 -v ./data:/data -e LOGNROLL_DB_PATH=/data/lognroll.db ghcr.io/making/lognroll:jvm
 ```
-
-* OTLP/HTTP endpoint: http://localhost:4318/v1/logs
-* Default bearer token: `changeme` (you can change the token with `--lognroll.auth.token=verysecuretoken`)
 
 ## Build and run
 
