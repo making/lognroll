@@ -68,6 +68,8 @@ jobs:
       use_pre_built_artifact: true
       pre_built_artifact_name: lognroll-x86_64-pc-linux
       pre_built_artifact_path: lognroll-x86_64-pc-linux
+      e2e_test: true
+      test_url_1: http://localhost:8080/actuator/health
   deploy-to-fly:
     needs: build-native-docker-image
     permissions:
