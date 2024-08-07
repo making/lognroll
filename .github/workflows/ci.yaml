@@ -34,21 +34,6 @@ jobs:
     with:
       image_file: image.yaml
       download_target: false
-  build-native-image:
-    if: false
-    needs: test
-    permissions:
-      contents: read
-      packages: write
-    uses: making/workflows/.github/workflows/build-docker-image-maven-native.yaml@main
-    with:
-      image_file: image_native.yaml
-      download_target: false
-      e2e_test: true
-      test_url_1: http://localhost:8080/actuator/health
-      # TODO how to test?
-      #  cat src/test/resources/logs.json | curl -H "Content-Type: application/json" -H "Authorization: Bearer changeme" --fail --show-error --silent http://localhost:8080/v1/logs --data-binary @- -v
-      #  curl -s http://localhost:8080/api/logs -H "Authorization: Bearer changeme" | jq .
   build-native-binaries:
     needs: test
     permissions:
@@ -61,14 +46,30 @@ jobs:
           binary_suffix: -x86_64-pc-linux
         - runs-on: macos-14
           binary_suffix: -aarch64-apple-darwin
+        - runs-on: macos-13
+          binary_suffix: -x86_64-apple-darwin
     with:
       download_target: false
       e2e_test: true
       test_url_1: http://localhost:8080/actuator/health
+      # TODO how to test?
+      #  cat src/test/resources/logs.json | curl -H "Content-Type: application/json" -H "Authorization: Bearer changeme" --fail --show-error --silent http://localhost:8080/v1/logs --data-binary @- -v
+      #  curl -s http://localhost:8080/api/logs -H "Authorization: Bearer changeme" | jq .
       runs-on: ${{ matrix.with.runs-on }}
       binary_suffix: ${{ matrix.with.binary_suffix }}
+  build-native-docker-image:
+    needs: build-native-binaries
+    permissions:
+      contents: read
+      packages: write
+    uses: making/workflows/.github/workflows/build-docker-image-maven-native.yaml@main
+    with:
+      image_file: image_native.yaml
+      use_pre_built_artifact: true
+      pre_built_artifact_name: lognroll-x86_64-pc-linux
+      pre_built_artifact_path: lognroll-x86_64-pc-linux
   deploy-to-fly:
-    needs: build-native-image
+    needs: build-native-docker-image
     permissions:
       id-token: write
       contents: read
@@ -86,6 +87,11 @@ jobs:
       with:
         name: lognroll-x86_64-pc-linux
         path: lognroll-x86_64-pc-linux
+    - name: Download build artifacts x86_64-apple-darwin
+      uses: actions/download-artifact@v2
+      with:
+        name: lognroll-x86_64-apple-darwin
+        path: lognroll-x86_64-apple-darwin
     - name: Download build artifacts aarch64-apple-darwin
       uses: actions/download-artifact@v2
       with:
@@ -98,4 +104,5 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         files: |
           ./lognroll-x86_64-pc-linux/lognroll-x86_64-pc-linux
+          ./lognroll-x86_64-apple-darwin/lognroll-x86_64-apple-darwin
           ./lognroll-aarch64-apple-darwin/lognroll-aarch64-apple-darwin
