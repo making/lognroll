@@ -16,7 +16,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<protoc.version>4.27.3</protoc.version>
-		<antlr.version>4.13.1</antlr.version>
+		<antlr.version>4.13.2</antlr.version>
 	</properties>
 	<dependencies>
 		<dependency>
