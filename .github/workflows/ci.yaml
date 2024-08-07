@@ -25,7 +25,6 @@ jobs:
       test_url_1: http://localhost:8080/actuator/health
       upload_target: false
   build-jvm-image:
-    if: false
     needs: test
     permissions:
       contents: read
