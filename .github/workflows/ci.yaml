@@ -43,12 +43,10 @@ jobs:
         with:
         - runs-on: ubuntu-latest
           binary_suffix: -x86_64-pc-linux
-        - runs-on: ubuntu-latest
-          binary_suffix: -aarch64-pc-linux
-        - runs-on: macos-13
-          binary_suffix: -x86_64-apple-darwin
         - runs-on: macos-14
           binary_suffix: -aarch64-apple-darwin
+        - runs-on: macos-13
+          binary_suffix: -x86_64-apple-darwin
     with:
       download_target: false
       e2e_test: true
@@ -90,11 +88,6 @@ jobs:
       with:
         name: lognroll-x86_64-pc-linux
         path: lognroll-x86_64-pc-linux
-    - name: Download build artifacts aarch64-pc-linux
-      uses: actions/download-artifact@v2
-      with:
-        name: lognroll-aarch64-pc-linux
-        path: lognroll-aarch64-pc-linux
     - name: Download build artifacts x86_64-apple-darwin
       uses: actions/download-artifact@v2
       with:
@@ -112,6 +105,5 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         files: |
           ./lognroll-x86_64-pc-linux/lognroll-x86_64-pc-linux
-          ./lognroll-aarch64-pc-linux/lognroll-aarch64-pc-linux
           ./lognroll-x86_64-apple-darwin/lognroll-x86_64-apple-darwin
           ./lognroll-aarch64-apple-darwin/lognroll-aarch64-apple-darwin
