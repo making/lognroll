@@ -18,12 +18,8 @@ a simple OTLP log store
 
 ## Run with Pre-built Native Binaries
 
-Lognroll offers pre-built binaries for x86_64-pc-linux, x86_64-apple-darwin, and aarch64-apple-darwin. If you are using one of these environments, downloading these binaries is the easiest way to get started.
+Lognroll offers pre-built binaries for x86_64-apple-darwin, aarch64-apple-darwin, x86_64-pc-linux and aarch64-pc-linux. If you are using one of these environments, downloading these binaries is the easiest way to get started.
 
-* For x86_64-pc-linux
-```
-curl -sL -o lognroll https://github.com/making/lognroll/releases/download/tip/lognroll-x86_64-pc-linux 
-```
 * For x86_64-apple-darwin (Intel Mac)
 ```
 curl -sL -o lognroll https://github.com/making/lognroll/releases/download/tip/lognroll-x86_64-apple-darwin
@@ -31,6 +27,14 @@ curl -sL -o lognroll https://github.com/making/lognroll/releases/download/tip/lo
 * For aarch64-apple-darwin (Apple Silicon)
 ```
 curl -sL -o lognroll https://github.com/making/lognroll/releases/download/tip/lognroll-aarch64-apple-darwin
+```
+* For x86_64-pc-linux
+```
+curl -sL -o lognroll https://github.com/making/lognroll/releases/download/tip/lognroll-x86_64-pc-linux 
+```
+* For aarch64-pc-linux
+```
+curl -sL -o lognroll https://github.com/making/lognroll/releases/download/tip/lognroll-aarch64-pc-linux 
 ```
 
 After downloading the appropriate binary, you can start lognroll with the following commands:
