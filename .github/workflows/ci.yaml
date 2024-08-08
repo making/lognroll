@@ -43,7 +43,7 @@ jobs:
         with:
         - runs-on: ubuntu-latest
           binary_suffix: -x86_64-pc-linux
-        - runs-on: macos-14
+        - runs-on: ubuntu-latest
           binary_suffix: -aarch64-pc-linux
         - runs-on: macos-13
           binary_suffix: -x86_64-apple-darwin
