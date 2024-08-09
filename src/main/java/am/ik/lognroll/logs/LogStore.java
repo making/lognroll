@@ -1,10 +1,10 @@
 package am.ik.lognroll.logs;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface LogStore {
 
-	void addAll(Collection<Log> logs);
+	void addAll(List<Log> logs);
 
 	void clear();
 
