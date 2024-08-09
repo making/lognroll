@@ -1,6 +1,7 @@
 package am.ik.lognroll.logs.jdbc;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,7 +31,7 @@ public class JdbcLogStore implements LogStore {
 	}
 
 	@Override
-	public void addAll(List<Log> logs) {
+	public void addAll(Collection<Log> logs) {
 		if (CollectionUtils.isEmpty(logs)) {
 			return;
 		}
