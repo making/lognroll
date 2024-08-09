@@ -136,6 +136,9 @@ public class SyslogPayload {
 		if (resourceAttributes.containsKey("app_name")) {
 			body.serviceName(resourceAttributes.get("app_name").toString());
 		}
+		if (resourceAttributes.containsKey("source_type")) {
+			body.scope(resourceAttributes.get("source_type").toString());
+		}
 		if (this.severityText() != null) {
 			body.severityText(this.severityText());
 
