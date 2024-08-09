@@ -3,6 +3,7 @@ package am.ik.lognroll.logs.jdbc;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Component
@@ -167,6 +169,35 @@ public class JdbcLogQuery implements LogQuery {
 			.params(queryAndParams.params()) //
 			.query((rs, rowNum) -> new Volume(Instant.parse(rs.getString("date")), rs.getLong("count"))) //
 			.list();
+	}
+
+	@Override
+	@Transactional
+	public int delete(SearchRequest request) {
+		StringBuilder sql = new StringBuilder("SELECT log.log_id ");
+		QueryAndParams queryAndParams = buildQueryAndParams(request);
+		sql.append(queryAndParams.query());
+		List<Long> deleteIds = this.jdbcClient.sql(sql.toString())
+			.params(queryAndParams.params())
+			.query(Long.class)
+			.list();
+		List<List<Long>> splitList = splitList(deleteIds, 1000);
+		int deleted = 0;
+		for (List<Long> deleteIdList : splitList) {
+			deleted += this.jdbcClient.sql("DELETE FROM log WHERE log_id IN (:ids)")
+				.param("ids", deleteIdList) //
+				.update();
+		}
+		return deleted;
+	}
+
+	static <T> List<List<T>> splitList(List<T> originalList, int chunkSize) {
+		List<List<T>> partitionedList = new ArrayList<>();
+		int size = originalList.size();
+		for (int i = 0; i < size; i += chunkSize) {
+			partitionedList.add(new ArrayList<>(originalList.subList(i, Math.min(size, i + chunkSize))));
+		}
+		return partitionedList;
 	}
 
 	private record QueryAndParams(String query, Map<String, Object> params) {

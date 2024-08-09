@@ -17,6 +17,8 @@ public interface LogQuery {
 
 	List<Volume> findVolumes(SearchRequest request, Duration interval);
 
+	int delete(SearchRequest request);
+
 	record Volume(Instant date, long count) {
 
 	}

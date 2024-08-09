@@ -7,6 +7,7 @@ import java.util.List;
 import am.ik.lognroll.logs.LogQuery.Cursor;
 import am.ik.lognroll.logs.filter.FilterExpressionTextParser;
 import am.ik.pagination.CursorPageRequest;
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteException;
@@ -42,10 +43,8 @@ public class QueryController {
 		this.dbFile = dbFile;
 	}
 
-	@GetMapping(path = "/api/logs")
-	public LogsResponse showLogs(@RequestParam(required = false) String query, CursorPageRequest<Cursor> pageRequest,
-			@RequestParam(required = false) String filter, @RequestParam(required = false) Instant from,
-			@RequestParam(required = false) Instant to) {
+	private LogQuery.SearchRequest buildRequest(String query, @Nullable CursorPageRequest<Cursor> pageRequest,
+			String filter, Instant from, Instant to) {
 		SearchRequestBuilder searchRequest = SearchRequestBuilder.searchRequest()
 			.pageRequest(pageRequest)
 			.from(from)
@@ -61,7 +60,14 @@ public class QueryController {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
 			}
 		}
-		LogQuery.SearchRequest request = searchRequest.build();
+		return searchRequest.build();
+	}
+
+	@GetMapping(path = "/api/logs")
+	public LogsResponse showLogs(@RequestParam(required = false) String query, CursorPageRequest<Cursor> pageRequest,
+			@RequestParam(required = false) String filter, @RequestParam(required = false) Instant from,
+			@RequestParam(required = false) Instant to) {
+		LogQuery.SearchRequest request = buildRequest(query, pageRequest, filter, from, to);
 		try {
 			return new LogsResponse(this.logQuery.findLatestLogs(request));
 		}
@@ -77,19 +83,7 @@ public class QueryController {
 	public CountResponse showCount(@RequestParam(required = false) String query,
 			@RequestParam(required = false) String filter, @RequestParam(required = false) Instant from,
 			@RequestParam(required = false) Instant to) {
-		SearchRequestBuilder searchRequest = SearchRequestBuilder.searchRequest().from(from).to(to);
-		if (StringUtils.hasText(query)) {
-			searchRequest.query(query);
-		}
-		if (StringUtils.hasText(filter)) {
-			try {
-				searchRequest.filterExpression(this.parser.parse(filter));
-			}
-			catch (FilterExpressionTextParser.FilterExpressionParseException e) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-			}
-		}
-		LogQuery.SearchRequest request = searchRequest.build();
+		LogQuery.SearchRequest request = buildRequest(query, null, filter, from, to);
 		try {
 			return new CountResponse(this.logQuery.count(request));
 		}
@@ -106,19 +100,7 @@ public class QueryController {
 			@RequestParam(required = false) String filter, @RequestParam(required = false) Instant from,
 			@RequestParam(required = false) Instant to,
 			@RequestParam(required = false, defaultValue = "PT10M") Duration interval) {
-		SearchRequestBuilder searchRequest = SearchRequestBuilder.searchRequest().from(from).to(to);
-		if (StringUtils.hasText(query)) {
-			searchRequest.query(query);
-		}
-		if (StringUtils.hasText(filter)) {
-			try {
-				searchRequest.filterExpression(this.parser.parse(filter));
-			}
-			catch (FilterExpressionTextParser.FilterExpressionParseException e) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-			}
-		}
-		LogQuery.SearchRequest request = searchRequest.build();
+		LogQuery.SearchRequest request = buildRequest(query, null, filter, from, to);
 		try {
 			return new VolumesResponse(this.logQuery.findVolumes(request, interval));
 		}
@@ -136,9 +118,20 @@ public class QueryController {
 	}
 
 	@DeleteMapping(path = "/api/logs")
-	public ResponseEntity<Void> clearLogs() {
-		logger.info("Clear logs!!!");
-		this.logStore.clear();
+	public ResponseEntity<Void> delete(@RequestParam(required = false) String query,
+			@RequestParam(required = false) String filter, @RequestParam(required = false) Instant from,
+			@RequestParam(required = false) Instant to) {
+		LogQuery.SearchRequest request = buildRequest(query, null, filter, from, to);
+		try {
+			int deleted = this.logQuery.delete(request);
+			logger.info("Deleted {} logs", deleted);
+		}
+		catch (UncategorizedSQLException e) {
+			if (e.getCause() instanceof SQLiteException) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage(), e);
+			}
+			throw e;
+		}
 		return ResponseEntity.noContent().build();
 	}
 
