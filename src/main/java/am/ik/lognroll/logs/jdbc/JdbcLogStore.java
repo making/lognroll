@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 @Component
-@Transactional
 public class JdbcLogStore implements LogStore {
 
 	private final JdbcTemplate jdbcTemplate;
@@ -29,6 +28,7 @@ public class JdbcLogStore implements LogStore {
 		this.objectMapper = objectMapper;
 	}
 
+	@Transactional
 	@Override
 	public void addAll(List<Log> logs) {
 		if (CollectionUtils.isEmpty(logs)) {
@@ -69,6 +69,7 @@ public class JdbcLogStore implements LogStore {
 			.toList());
 	}
 
+	@Transactional
 	@Override
 	public void clear() {
 		this.jdbcTemplate.update("DELETE FROM resource_attributes");
