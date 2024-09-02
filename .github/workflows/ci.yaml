@@ -84,17 +84,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Download build artifacts x86_64-pc-linux
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v2
       with:
         name: lognroll-x86_64-pc-linux
         path: lognroll-x86_64-pc-linux
     - name: Download build artifacts x86_64-apple-darwin
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v2
       with:
         name: lognroll-x86_64-apple-darwin
         path: lognroll-x86_64-apple-darwin
     - name: Download build artifacts aarch64-apple-darwin
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v2
       with:
         name: lognroll-aarch64-apple-darwin
         path: lognroll-aarch64-apple-darwin
