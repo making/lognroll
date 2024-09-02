@@ -77,6 +77,7 @@ public class JdbcLogStore implements LogStore {
 
 	@Override
 	public void vacuum() {
+		this.jdbcTemplate.execute("PRAGMA auto_vacuum = 1");
 		this.jdbcTemplate.execute("VACUUM");
 	}
 
