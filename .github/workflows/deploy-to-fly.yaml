@@ -51,7 +51,7 @@ jobs:
         interval = 5000
         grace_period = "5s"
         method = "get"
-        path = "/actuator/health"
+        path = "/actuator/health/readyz"
         protocol = "http"
         timeout = 5000
         
