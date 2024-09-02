@@ -75,4 +75,9 @@ public class JdbcLogStore implements LogStore {
 		this.jdbcTemplate.update("DELETE FROM log");
 	}
 
+	@Override
+	public void vacuum() {
+		this.jdbcTemplate.execute("VACUUM");
+	}
+
 }

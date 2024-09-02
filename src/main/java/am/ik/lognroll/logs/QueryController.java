@@ -125,6 +125,7 @@ public class QueryController {
 		try {
 			int deleted = this.logQuery.delete(request);
 			logger.info("Deleted {} logs", deleted);
+			this.logStore.vacuum();
 		}
 		catch (UncategorizedSQLException e) {
 			if (e.getCause() instanceof SQLiteException) {

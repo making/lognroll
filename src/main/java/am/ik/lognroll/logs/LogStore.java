@@ -8,4 +8,6 @@ public interface LogStore {
 
 	void clear();
 
+	void vacuum();
+
 }

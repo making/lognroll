@@ -188,7 +188,6 @@ public class JdbcLogQuery implements LogQuery {
 				.param("ids", deleteIdList) //
 				.update();
 		}
-		this.jdbcClient.sql("VACUUM").update();
 		return deleted;
 	}
 
